@@ -37,4 +37,4 @@ Make sure you enter the Indigo device ID for your UPS device as the value of the
 
 If you are comfortable with the shell, you may wish to delete all but one of the handler files and then create them all again but as hard links to the one file you saved. In that way, you only need to edit one file to change all of the handlers.
 
-Please use the [apcupsd plugin discussion forum](http://www.perceptiveautomation.com/userforum/viewtopic.php?f=22&t=10707 to post any issues, questions, ideas, etc.
+Please use the [apcupsd plugin discussion forum](http://www.perceptiveautomation.com/userforum/viewtopic.php?f=22&t=10707) to post any issues, questions, ideas, etc.
