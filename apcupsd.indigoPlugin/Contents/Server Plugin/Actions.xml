@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<Actions>	
+    <Action id="readApcupsd" deviceFilter="self.apcupsdServer">
+        <Name>Update UPS States</Name>
+        <ConfigUI>
+            <Field id="apcupsdAction" type="textfield" hidden="true" defaultValue="readApcupsd" >
+                <Label>This should be hidden</Label>
+            </Field>
+        </ConfigUI>
+        <CallbackMethod>actionControlApcupsd</CallbackMethod>
+    </Action>
+
+    <Action id="apcupsdServerEvent" deviceFilter="self.apcupsdServer">
+        <Name>Event interface for apcupsd server</Name>
+        <ConfigUI>
+            <Field id="apcupsdAction" type="textfield" hidden="true" defaultValue="apcupsdServerEvent" >
+                <Label>This should be hidden</Label>
+            </Field>
+        </ConfigUI>
+        <CallbackMethod>actionControlApcupsd</CallbackMethod>
+    </Action>
+
+    <Action id="logStatusReport" deviceFilter="self.apcupsdServer">
+        <Name>Write a full status report to the Indigo log</Name>
+ <!--       <ConfigUI>
+            <Field id="apcupsdAction" type="textfield" hidden="true" defaultValue="logStatusReport" >
+                <Label>This should be hidden</Label>
+            </Field>
+        </ConfigUI> -->
+        <CallbackMethod>actionControlApcupsd</CallbackMethod>
+    </Action>
+</Actions>

@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<Devices>
+	<!-- Define some devices -->
+	<Device id="apcupsdServer" type="custom">
+		<Name>apcupsd UPS</Name>
+		<ConfigUI>
+			<SupportURL>file:///Library/Application%20Support/Perceptive%20Automation/Indigo%206/Plugins/apcupsd.indigoPlugin/Contents/Resources/reportFields.html</SupportURL>
+
+			<Field id="apcupsdAddressType" type="menu" defaultValue="localhost">
+				<Label>IP Address</Label>
+				<List>
+					<Option value="localhost">local host</Option>
+					<Option value="specify">Will Specify</Option>
+				</List>
+			</Field>
+
+			<Field id="apcupsdAddress" type="textfield" visibleBindingId="apcupsdAddressType" visibleBindingValue="specify">
+				<Label>IP Address or domain name:</Label>
+			</Field>
+			<Field id="apcupsdPort" type="textfield" defaultValue="3551">
+				<Label>Port number:</Label>
+			</Field>
+
+			<Field id="simpleSeparator2" type="separator" />
+
+			<Field id="label1" type="label" alignText="center">
+				<Label>Select the UPS Report fields to use for states in this device</Label>
+			</Field>
+
+			<Field id="label2" type="label" fontSize="small"  fontColor="darkgray" alignText="center">
+				<Label>Note: Not every state is available for every UPS</Label>
+			</Field>
+
+			<Field id="configButton2" type="button" >
+				<Label/>
+				<Title>Select all states</Title>
+				<CallbackMethod>selectAllStates</CallbackMethod>
+			</Field>
+
+			<Field id="configButton3" type="button" >
+				<Label/>
+				<Title>Deselect all states</Title>
+				<CallbackMethod>deSelectAllStates</CallbackMethod>
+			</Field>
+
+			<Field id="configButton4" type="button" >
+				<Label/>
+				<Title>Reset default states</Title>
+				<CallbackMethod>selectDefaultStates</CallbackMethod>
+			</Field>
+
+			<Field id="apcupsdstatealarmdel" type="checkbox" defaultValue="false" tooltip="Delay period before UPS starts sounding alarm">
+				<Label>alarmdel</Label>
+			</Field>
+			<Field id="apcupsdStateAPC" type="checkbox" defaultValue="false" tooltip="version, number of records and number of bytes">
+				<Label>apc</Label>
+			</Field>
+			<Field id="apcupsdStateBATTDATE" type="checkbox" defaultValue="false" tooltip="Date battery last replaced - if set">
+				<Label>battdate</Label>
+			</Field>
+			<Field id="apcupsdStateBATTV" type="checkbox" defaultValue="true" tooltip="Current battery voltage">
+				<Label>battv</Label>
+			</Field>
+			<Field id="apcupsdStateBCHARGE" type="checkbox" defaultValue="true" tooltip="Current battery capacity charge percentage">
+				<Label>bcharge</Label>
+			</Field>
+			<Field id="apcupsdStateCABLE" type="checkbox" defaultValue="false" tooltip="Cable type specified in the configuration file">
+				<Label>cable</Label>
+			</Field>			
+			<Field id="apcupsdStateCUMONBATT" type="checkbox" defaultValue="true" tooltip="Cumulative seconds on battery since apcupsd startup">
+				<Label>cumonbatt</Label>
+			</Field>
+			<Field id="apcupsdStateDATE" type="checkbox" defaultValue="true" tooltip="Date and time of last update from UPS">
+				<Label>date</Label>
+			</Field>
+			<Field id="apcupsdStateDRIVER" type="checkbox" defaultValue="false" tooltip="Driver software used to connect to the UPS">
+				<Label>driver</Label>
+			</Field>
+			<Field id="apcupsdStateDSHUTD" type="checkbox" defaultValue="false" tooltip="Delay before UPS powers down after command received">
+				<Label>dshutd</Label>
+			</Field>
+			<Field id="apcupsdStateDWAKE" type="checkbox" defaultValue="false" tooltip="Time UPS waits after power off when the power is restored">
+				<Label>dwake</Label>
+			</Field>
+			<Field id="apcupsdStateEXTBATTS" type="checkbox" defaultValue="false" tooltip="Number of external batteries (for XL models)">
+				<Label>extbatts</Label>
+			</Field>
+			<Field id="apcupsdStateFIRMWARE" type="checkbox" defaultValue="false" tooltip="UPS firmware version">
+				<Label>firmware</Label>
+			</Field>
+			<Field id="apcupsdStateHITRANS" type="checkbox" defaultValue="false" tooltip="Input line voltage above which UPS will switch to battery">
+				<Label>hitrans</Label>
+			</Field>
+			<Field id="apcupsdStateHOSTNAME" type="checkbox" defaultValue="false" tooltip="hostname of computer running apcupsd">
+				<Label>hostname</Label>
+			</Field>
+			<Field id="apcupsdStateHUMIDITY" type="checkbox" defaultValue="true" tooltip="Ambient humidity">
+				<Label>humidity</Label>
+			</Field>
+			<Field id="apcupsdStateITEMP" type="checkbox" defaultValue="true" tooltip="UPS internal temperature ºC">
+				<Label>itemp</Label>
+			</Field>
+			<Field id="apcupsdStateLASTXFER" type="checkbox" defaultValue="true" tooltip="Last transfer to battery">
+				<Label>lastxfer</Label>
+			</Field>
+			<Field id="apcupsdStateLINEFAIL" type="checkbox" defaultValue="true" tooltip="Input line voltage status">
+				<Label>linefail</Label>
+			</Field>
+			<Field id="apcupsdStateLINEFREQ" type="checkbox" defaultValue="true" tooltip="Current line frequency in Hertz">
+				<Label>linefreq</Label>
+			</Field>
+			<Field id="apcupsdStateLINEV" type="checkbox" defaultValue="true" tooltip="Current input line voltage">
+				<Label>linev</Label>
+			</Field>
+			<Field id="apcupsdStateLOADPCT" type="checkbox" defaultValue="true" tooltip="Percentage of UPS load capacity used as estimated by UPS">
+				<Label>loadpct</Label>
+			</Field>
+			<Field id="apcupsdStateLOTRANS" type="checkbox" defaultValue="false" tooltip="Input line voltage below which UPS will switch to battery">
+				<Label>lotrans</Label>
+			</Field>
+			<Field id="apcupsdStateMANDATE" type="checkbox" defaultValue="false" tooltip="UPS date of manufacture">
+				<Label>mandate</Label>
+			</Field>
+			<Field id="apcupsdStateMAXLINEV" type="checkbox" defaultValue="false" tooltip="Maximum input line voltage since apcupsd startup">
+				<Label>maxlinev</Label>
+			</Field>
+			<Field id="apcupsdStateMAXTIME" type="checkbox" defaultValue="false" tooltip="Max battery runtime (TIMEOUT) after which system is shutdown">
+				<Label>maxtime</Label>
+			</Field>
+			<Field id="apcupsdStateMBATTCHG" type="checkbox" defaultValue="false" tooltip="Min battery charge % (BCHARGE) required for system shutdown">
+				<Label>mbattchg</Label>
+			</Field>
+			<Field id="apcupsdStateMINLINEV" type="checkbox" defaultValue="false" tooltip="Minimum input line voltage since apcupsd startup">
+				<Label>minlinev</Label>
+			</Field>
+			<Field id="apcupsdStateMINTIMEL" type="checkbox" defaultValue="false" tooltip="Min battery runtime (MINUTES) required for system shutdown">
+				<Label>mintimel</Label>
+			</Field>
+			<Field id="apcupsdStateMODEL" type="checkbox" defaultValue="false" tooltip="UPS model derived from UPS information">
+				<Label>model</Label>
+			</Field>
+			<Field id="apcupsdStateNOMBATTV" type="checkbox" defaultValue="false" tooltip="Nominal battery voltage">
+				<Label>nombattv</Label>
+			</Field>
+			<Field id="apcupsdStateNOMINV" type="checkbox" defaultValue="false" tooltip="The input voltage that the UPS is configured to expect">
+				<Label>nominv</Label>
+			</Field>
+			<Field id="apcupsdStateNOMOUTV" type="checkbox" defaultValue="false" tooltip="Nominal output voltage to supply when on battery power">
+				<Label>nomoutv</Label>
+			</Field>
+			<Field id="apcupsdStateNOMPOWER" type="checkbox" defaultValue="false" tooltip="Nominal power output in watts">
+				<Label>nompower</Label>
+			</Field>
+			<Field id="apcupsdStateNUMXFERS" type="checkbox" defaultValue="true" tooltip="Number of transfers to battery since apcupsd startup">
+				<Label>numxfers</Label>
+			</Field>
+			<Field id="apcupsdStateOUTPUTV" type="checkbox" defaultValue="true" tooltip="Current UPS output voltage">
+				<Label>outputv</Label>
+			</Field>
+			<Field id="apcupsdStateRETPCT" type="checkbox" defaultValue="false" tooltip="Battery charge % required after power off to restore power">
+				<Label>retpct</Label>
+			</Field>
+			<Field id="apcupsdStateSELFTEST" type="checkbox" defaultValue="false" tooltip="Date and time of last self test since apcupsd startup">
+				<Label>selftest</Label>
+			</Field>
+			<Field id="apcupsdStateSENSE" type="checkbox" defaultValue="true" tooltip="Current UPS sensitivity setting for voltage fluctuations">
+				<Label>sense</Label>
+			</Field>
+			<Field id="apcupsdStateSERIALNO" type="checkbox" defaultValue="false" tooltip="UPS serial number">
+				<Label>serialno</Label>
+			</Field>
+			<Field id="apcupsdStateSTARTTIME" type="checkbox" defaultValue="false" tooltip="Date and time apcupsd was started">
+				<Label>starttime</Label>
+			</Field>
+			<Field id="apcupsdStateSTATFLAG" type="checkbox" defaultValue="false" tooltip="PS status flag in hex">
+				<Label>statflag</Label>
+			</Field>
+			<Field id="apcupsdStateSTESTI" type="checkbox" defaultValue="false" tooltip="Self-test interval">
+				<Label>stesti</Label>
+			</Field>
+			<Field id="apcupsdStateTIMELEFT" type="checkbox" defaultValue="true" tooltip="Remaining runtime left on battery as estimated by the UPS">
+				<Label>timeleft</Label>
+			</Field>
+			<Field id="apcupsdStateTONBATT" type="checkbox" defaultValue="true" tooltip="Seconds currently on battery">
+				<Label>tonbatt</Label>
+			</Field>
+			<Field id="apcupsdStateUPSMODE" type="checkbox" defaultValue="true" tooltip="Mode in which UPS is operating">
+				<Label>upsmode</Label>
+			</Field>
+			<Field id="apcupsdStateUPSNAME" type="checkbox" defaultValue="false" tooltip="UPS name from configuration file (dumb) or EEPROM (smart)">
+				<Label>upsname</Label>
+			</Field>
+			<Field id="apcupsdStateVERSION" type="checkbox" defaultValue="false" tooltip="apcupsd version number, date and operating system">
+				<Label>version</Label>
+			</Field>
+			<Field id="apcupsdStateXONBATT" type="checkbox" defaultValue="true" tooltip="Date, time of last transfer off battery since apcupsd startup">
+				<Label>xonbatt</Label>
+			</Field>
+			<Field id="apcupsdStateXOFFBATT" type="checkbox" defaultValue="true" tooltip="Date, time of last transfer to battery since apcupsd startup">
+				<Label>xoffbatt</Label>
+			</Field>
+
+			<Field id="apcupsdDevceStateDisplay" type="textfield" defaultValue='status'>
+				<Label>State to use for State Column</Label >
+			</Field>
+
+		</ConfigUI>
+
+		<States> 
+			<State id="status">
+				<ValueType>string</ValueType>
+				<TriggerLabel>status</TriggerLabel>
+				<ControlPageLabel>status</ControlPageLabel>
+			</State>
+		</States>
+<!--		<UiDisplayStateId>LINEV</UiDisplayStateId>  -->
+	</Device>
+</Devices>

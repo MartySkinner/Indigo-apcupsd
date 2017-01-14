@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+<Events>
+
+    <Event id="commfailure" filter="self" tooltip="This is a test">
+        <Name>commfailure - Communications to UPS lost</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event> 
+
+    <Event id="commok" filter="self">
+        <Name>commok - Communications to UPS restored</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event> 
+
+    <Event id="killpower" filter="self">
+        <Name>killpower - apcupsd has done killpower</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event> 
+
+    <Event id="annoyme" filter="self">
+       <Name>annoyme - Power problems with UPS</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="battattach" filter="self">
+       <Name>battattach - Battery attached</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="battdetach" filter="self">
+       <Name>battdetach - Battery detached</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="changeme" filter="self">
+       <Name>changeme - Battery failure</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="doreboot" filter="self">
+       <Name>doreboot - UPS Reboot</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="doshutdown" filter="self">
+       <Name>doshutdown - UPS Shutdown</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="emergency" filter="self">
+       <Name>emergency - Emergency Shutdown (possible battery failure)</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="endselftest" filter="self">
+       <Name>endselftest - Self Test complete</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="failing" filter="self">
+       <Name>failing - Battery power exhaused</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="loadlimit" filter="self">
+       <Name>loadlimit - Remaining battery charge below limit</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="mainsback" filter="self">
+       <Name>mainsback - Power restored, switching to A/C</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="offbattery" filter="self">
+       <Name>offbattery - Returned to A/C power after onbattery event</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="onbattery" filter="self">
+       <Name>onbattery - Running on battery power</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="powerout" filter="self">
+       <Name>powerout - A/C Power failure, switching to battery</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="remotedown" filter="self">
+       <Name>remotedown - Remote Shutdown</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="runlimit" filter="self">
+       <Name>runlimit - Remaining battery runtime below limit</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="startselftest" filter="self">
+       <Name>startselftest - Self Test starting</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="timeout" filter="self">
+       <Name>timeout - Battery time limit exceeded</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+</Events>

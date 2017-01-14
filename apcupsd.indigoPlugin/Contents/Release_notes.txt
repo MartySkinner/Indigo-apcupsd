@@ -1,0 +1,57 @@
+v 0.0.1 Sep 11, 2013
+    Created the plugin from a previous script
+
+v 0.1.0 Sep 12, 2013
+    First public release
+    Added state selection options (All, None, Default set)
+    Added ability to display state descriptions from apcupsd.org
+    Added option to select the state to be used for the Devices window state column
+    Added error handling and reporting for connection errors
+    Added action to update UPS device on demand
+    Added Menu script to refresh all UPS devices
+
+v 0.1.1 Sep 12, 2013
+    Changed button text in Devices.xml
+
+v 0.2.0 Sep 13, 2013
+    Added error reporting in State column in case of lost communications to the UPS
+    Changed the STATUS state to be hard coded - required to determine comms status
+    Fixed several minor errors in rarely used methods
+    Added deleting state values in case of lost comms (commLostStatesList)
+    Added tooltips to states in ConfigUi
+    Added Complete states list in support URL
+
+v 0.3.0 Sep 14, 2013
+    Finalized list of state values to keep if commlost
+    Added notation (*) to state values that are preserved during a comm failure
+    Improved error detection and retry login for status update polling
+    Changed state names to lower case
+    Switched query engine from native Python to call /sbin/apcaccess
+    Added event triggers for all apcpusd events
+    Added 2 utility programs to integrate with apcupsd events: apccmdex and apcupsdAction
+
+v 0.3.1 Sep 15, 2013
+    Added acton to dump full status report for a UPS device to the log
+    Added menu item to log full status report for all UPSs 
+
+v 0.3.2 Sep 15, 2013
+    Several small, but critical, bug fixes
+
+v 0.3.3 Sep 16, 2013
+    Changed event names to show apcupsd event name + description
+    Changed definition of status ONLINE to != COMMLOST
+    Changed model name to "apcupsd UPS"
+    Added  apcupsdAction to readApcupsd - to let events force a status update
+
+v 0.4.0 Oct 30, 2013
+    Improved error handling when apcupsd is not available
+    Added internal server to allow event communications from remote systems
+    Fixed bug in trigger initialization
+    Revised the polling model to query Indigo for all valid devices on each read (rather than maintaining an internal list)
+    Complete re-write of the logging code
+
+v 0.4.1 Nov 02, 2013
+    Fixed a bug in plugin startup when upgrading without a plugin config file
+
+v 0.4.2 Nov 03, 2013
+    Fixed a bug in the debugging and logging code
