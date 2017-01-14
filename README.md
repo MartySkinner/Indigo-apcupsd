@@ -8,9 +8,9 @@ When creating an apcupsd plugin device, you need to:
 * Provide an IP Address. If you have apcupsd running on the same machine as your Indigo server, select the default **local host**. Otherwise select **Will Specify** and enter the IP Address in textfield that appears.
 * Enter the port number. The default of 3551 should be correct for most installations.
 * Select the UPS Report Fields you wish to use for states in this device. The default set contains the fields that are most likely to be of interest. Buttons are available to:
-- Select all states (fields)
-- Deselect all states (fields)
-- Reset default states list (i.e. Reset)
+  - Select all states (fields)
+  - Deselect all states (fields)
+  - Reset default states list (i.e. Reset)
 * Specify the state (field) to be displayed for this device in Indigo's Devices window State column
 * Click Save
 
@@ -25,7 +25,8 @@ To send events to the event server, you need to edit the event handlers in /etc/
 commfailure, commok, doreboot, doshutdown, emergency, endselftest, failing, loadlimit, mainsback, offbattery, onbattery, powerout, remotedown, runlimit, startselftest and timeout
 
 Add the following text to each file you wish to have send events to the Indigo apcupsd plugin:
-#!/bin/sh
+
+\#!/bin/sh
 
 EVENT=`basename $0`
 UPS=12345678
@@ -36,5 +37,4 @@ Make sure you enter the Indigo device ID for your UPS device as the value of the
 
 If you are comfortable with the shell, you may wish to delete all but one of the handler files and then create them all again but as hard links to the one file you saved. In that way, you only need to edit one file to change all of the handlers.
 
-Please use the apcupsd plugin discussion forum [http://www.perceptiveautomation.com/userforum/viewtopic.php?f=22&t=10707] to post any issues, questions, ideas, etc.
-
+Please use the [apcupsd plugin discussion forum](http://www.perceptiveautomation.com/userforum/viewtopic.php?f=22&t=10707 to post any issues, questions, ideas, etc.
