@@ -26,12 +26,12 @@ commfailure, commok, doreboot, doshutdown, emergency, endselftest, failing, load
 
 Add the following text to each file you wish to have send events to the Indigo apcupsd plugin:
 
-\#!/bin/sh
-
-EVENT=`basename $0`
-UPS=12345678
-
-/bin/echo -n "${UPS}:${EVENT}" |/usr/bin/nc -w1 127.0.0.1 15006 &
+    #!/bin/sh
+    
+    EVENT=`basename $0`
+    UPS=12345678
+    
+    /bin/echo -n "${UPS}:${EVENT}" |/usr/bin/nc -w1 127.0.0.1 15006 &
 
 Make sure you enter the Indigo device ID for your UPS device as the value of the UPS variable in the script.
 
