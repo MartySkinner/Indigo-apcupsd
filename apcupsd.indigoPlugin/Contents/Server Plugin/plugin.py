@@ -8,7 +8,8 @@
 ################################################################################
 # Imports
 ################################################################################
-from berkinet import versionCheck, logger
+from berkinet import logger
+from ghpu import GitHubPluginUpdater
 import inspect
 import os
 import socket
@@ -95,6 +96,7 @@ class Plugin(indigo.PluginBase):
 
         self.log = logger(self)
         self.logName = pluginDisplayName
+	self.updater = GitHubPluginUpdater('martyskinner', 'apcupsd', self)
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
@@ -163,6 +165,7 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
         self.startingUp = False
+	self.updater.checkForUpdate()
 
         if self.useIpConn:
             port = int(self.pluginPrefs["useIpConnPort"])
