@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<MenuItems>
+	<MenuItem id="titleSeparator2" type="separator" />
+	<MenuItem id="checkForUpdates">
+		<Name>Check for Updates</Name>
+		<CallbackMethod>checkForUpdates</CallbackMethod>
+	</MenuItem>
+</MenuItems>
