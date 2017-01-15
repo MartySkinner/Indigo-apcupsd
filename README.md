@@ -8,6 +8,7 @@ This plugin release has been tested with Indigo 5, 6 and 7. It's possible it mig
 
 After you install the plugin you will need to configure it. In the __Configure apcupsd__ dialog, set the frequency at which the Indigo devices should be updated, a connection timeout, and a debugging level.
 ![Plugin Configuration](doc-images/plugin_config.png)
+
 Once configured, the plugin will allow you to create an Indigo device for each apcupsd instance (IP Address & Port) you have.
 
 ## Device Configuration
@@ -27,8 +28,6 @@ When creating an apcupsd plugin device, you need to:
 This release contains a built-in IP server to receive event notifications from the local apcupsd process, and instances of apcupsd running on remote systems. This feature is in addition to the Event Notification feature available in release 0.3.3, but is designed to ultimately replace that implementation.
 
 To enable the new event server click the __Use IP Socket for events?__ checkbox in the __Configure apcupsd__ dialog. Then enter the local IP port to listen on and a comma separated list of IP addresses from which incoming connections can be accepted. If you are running apcupsd on the local host, be sure to include 127.0.0.1. The screenshot in the Plugin Configuration section shows this.
-
-![Plugin Configuration](doc-images/plugin_config.png)
 
 To send events to the event server, you need to edit the event handlers in __/etc/apcupsd__. The following handlers (filenames __must__ match these names) are supported:
 
