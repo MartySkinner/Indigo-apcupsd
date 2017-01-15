@@ -1,3 +1,5 @@
+# acpupsd
+
 Note: This plugin **requires** apcupsd (http://www.apcupsd.org) to be installed and running on whatever machine your UPS is connected to.
 
 When you install the plugin you will need to configure it. In the Plugin configuration dialog set the frequency at which the Indigo devices should be updated, a connection timeout, and a debugging level.
@@ -14,12 +16,13 @@ When creating an apcupsd plugin device, you need to:
 * Specify the state (field) to be displayed for this device in Indigo's Devices window State column
 * Click Save
 
+## Event Notifications
 
 This release contains a built-in IP server to receive event notifications from the local apcupsd, and instances of apcupsd running on remote hardware. This feature is in addition to the Event Notification feature available in release 0.3.3, but is designed to ultimately replace that implementation.
 
-To enable the new event server click the Use IP Socket for events? checkbox in the Plugin Config Dialog. Then enter the local IP port to listen on and a comma separated list of IP addresses from which incoming connections can be accepted. If you are running apcupsd on the local host, be sure to include 127.0.0.1. Here is a screenshot showing an example of the IP server config:
+To enable the new event server click the __Use IP Socket for events?__ checkbox in the Plugin Config Dialog. Then enter the local IP port to listen on and a comma separated list of IP addresses from which incoming connections can be accepted. If you are running apcupsd on the local host, be sure to include 127.0.0.1. Here is a screenshot showing an example of the IP server config:
 
-<picture>
+![Plugin Configuration](doc-images/plugin_config.png)
 
 To send events to the event server, you need to edit the event handlers in /etc/apcupsd. The following handlers are supported:
 commfailure, commok, doreboot, doshutdown, emergency, endselftest, failing, loadlimit, mainsback, offbattery, onbattery, powerout, remotedown, runlimit, startselftest and timeout
@@ -37,4 +40,17 @@ Make sure you enter the Indigo device ID for your UPS device as the value of the
 
 If you are comfortable with the shell, you may wish to delete all but one of the handler files and then create them all again but as hard links to the one file you saved. In that way, you only need to edit one file to change all of the handlers.
 
+## Troubleshooting and Discussions
+
 Please use the [apcupsd plugin discussion forum](http://www.perceptiveautomation.com/userforum/viewtopic.php?f=22&t=10707) to post any issues, questions, ideas, etc.
+
+## License
+
+This project is licensed using [Unlicense](http://unlicense.org/).
+
+## Plugin ID
+
+Here's the plugin ID in case you need to programmatically restart the plugin:
+
+**Plugin ID**: com.berkinet.apcupsd
+
