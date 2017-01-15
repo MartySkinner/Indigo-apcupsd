@@ -93,10 +93,10 @@ class Plugin(indigo.PluginBase):
     ########################################
     def __init__(self, pluginid, pluginDisplayName, pluginVersion, pluginPrefs):
         indigo.PluginBase.__init__(self, pluginid, pluginDisplayName, pluginVersion, pluginPrefs)
+	self.updater = GitHubPluginUpdater(self)
 
         self.log = logger(self)
         self.logName = pluginDisplayName
-	self.updater = GitHubPluginUpdater('martyskinner', 'apcupsd', self)
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
@@ -157,6 +157,10 @@ class Plugin(indigo.PluginBase):
 
             self.log.log(1, dbFlg, "Plugin options reset. Polling apcupsd servers every %s minutes with a %s second timeout and a debug level of %i" % (self.apcupsdFrequency, int(self.apcupsdTimeout), int(valuesDict["showDebugInfo1"])), self.logName)   
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
+
+    ########################################
+    def checkForUpdates(self):
+	self.updater.checkForUpdate()
 
     ########################################
     def runConcurrentThread(self):
