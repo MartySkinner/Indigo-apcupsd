@@ -62,6 +62,20 @@ def eventServer(self, host, port):
     client.close()
     self.log.log(2, dbFlg, "%s server closed" % (funcName), self.logName)
 
+########################################
+def find_in_path(self, file_name, def_path=os.defpath):
+        funcName = inspect.stack()[0][3]
+        dbFlg = False
+        path = os.getenv('PATH', def_path)
+        self.log.log(2, dbFlg, "%s: PATH to search: %s" % (funcName, path), self.logName)
+        for d in path.split(os.pathsep):
+                file_path = os.path.abspath(os.path.join(d, file_name))
+                if os.path.exists(file_path):
+                        self.log.log(2, dbFlg, "%s: found %s" % (funcName, file_path), self.logName)
+                        return file_path
+        self.log.log(2, dbFlg, "%s: %s not found in PATH" % (funcName, file_name), self.logName)
+        return file_name
+
 ################################################################################
          # delayAmount : 900
             # description : plugin action
@@ -93,7 +107,6 @@ class Plugin(indigo.PluginBase):
     ########################################
     def __init__(self, pluginid, pluginDisplayName, pluginVersion, pluginPrefs):
         indigo.PluginBase.__init__(self, pluginid, pluginDisplayName, pluginVersion, pluginPrefs)
-	self.updater = GitHubPluginUpdater(self)
 
         self.log = logger(self)
         self.logName = pluginDisplayName
@@ -123,6 +136,15 @@ class Plugin(indigo.PluginBase):
         self.serverRun = True
         self.readLoop = True
         self.startingUp = True
+
+        self.updater = GitHubPluginUpdater(self)
+        self.updater.checkForUpdate()
+        binary = "apcaccess"
+        self.utility_binary = find_in_path(self, binary, "/usr/local/sbin:/sbin")
+        self.utility_binary_found = True
+        if binary == self.utility_binary:
+                self.utility_binary_found = False
+                self.log.logError("Could not find the '%s' binary. Is the APCUPSD package installed?" % (binary), self.logName)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
 
@@ -169,7 +191,10 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
         self.startingUp = False
-	self.updater.checkForUpdate()
+        if self.utility_binary_found is False:
+            self.log.logError("Plugin being shutdown pending installation of the APCUPSD package", self.logName)
+            self.stopPlugin()
+            self.sleep(10) # give it a few seconds for the stopPlugin to take effect, othewise this thread continues
 
         if self.useIpConn:
             port = int(self.pluginPrefs["useIpConnPort"])
@@ -241,8 +266,8 @@ class Plugin(indigo.PluginBase):
 
             apcupsdRetries = apcupsdRetries + 1
 
-            report = os.popen("/sbin/apcaccess status " + sAddress + " " + sPort).read()
-            result = os.popen("/sbin/apcaccess status " + sAddress + " " + sPort).close()
+            report = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).read()
+            result = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).close()
             if result:
                 self.log.logError("%s: Connection to apcaccess failed with error code:%s. Attempt %s of 5" % (funcName, result, apcupsdRetries), self.logName)
                 apcupsdSuccess = False
@@ -480,7 +505,7 @@ class Plugin(indigo.PluginBase):
             sAddress = indigo.devices[int(action.deviceId)].pluginProps["apcupsdAddress"]
             sPort = indigo.devices[int(action.deviceId)].pluginProps["apcupsdPort"] 
  
-            report = os.popen("/sbin/apcaccess status " + sAddress + " " + sPort).read()
+            report = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).read()
             self.log.log("\n\nFull APCUPSD Status report for %s:\n%s" % (funcName, indigo.devices[int(action.deviceId)].name, report), self.logName)            
         elif apcupsdAction == 'commfailure':
             dev.setErrorStateOnServer(u'lost comm')
