@@ -18,6 +18,7 @@ import sys
 import threading 
 import urllib
 import indigo
+import time
 
 ################################################################################
 # Globals
@@ -137,14 +138,18 @@ class Plugin(indigo.PluginBase):
         self.readLoop = True
         self.startingUp = True
 
-        self.updater = GitHubPluginUpdater(self)
-        self.updater.checkForUpdate()
-        binary = "apcaccess"
-        self.utility_binary = find_in_path(self, binary, "/usr/local/sbin:/sbin")
-        self.utility_binary_found = True
-        if binary == self.utility_binary:
-                self.utility_binary_found = False
-                self.log.logError("Could not find the '%s' binary. Is the APCUPSD package installed?" % (binary), self.logName)
+	# setup the plugin update checker... it will be disabled if the URL is empty
+	self.updater = GitHubPluginUpdater(self)
+	daysBetweenUpdateChecks = 1	#***TMP*** hardcode until we can make it a preference
+	self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
+	self.nextUpdateCheck = 0	# this will force an update check as soon as the plugin is running
+
+	binary = "apcaccess"
+	self.utility_binary = find_in_path(self, binary, "/usr/local/sbin:/sbin")
+	self.utility_binary_found = True
+	if binary == self.utility_binary:
+		self.utility_binary_found = False
+		self.log.logError("Could not find the '%s' binary. Is the APCUPSD package installed?" % (binary), self.logName)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
 
@@ -181,6 +186,8 @@ class Plugin(indigo.PluginBase):
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
 
     ########################################
+    # this is called by the custom menu item
+    ########################################
     def checkForUpdates(self):
 	self.updater.checkForUpdate()
 
@@ -191,10 +198,10 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
         self.startingUp = False
-        if self.utility_binary_found is False:
+	if self.utility_binary_found is False:
             self.log.logError("Plugin being shutdown pending installation of the APCUPSD package", self.logName)
-            self.stopPlugin()
-            self.sleep(10) # give it a few seconds for the stopPlugin to take effect, othewise this thread continues
+	    self.stopPlugin()
+	    self.sleep(10) # give it a few seconds for the stopPlugin to take effect, othewise this thread continues
 
         if self.useIpConn:
             port = int(self.pluginPrefs["useIpConnPort"])
@@ -204,6 +211,19 @@ class Plugin(indigo.PluginBase):
             self.log.log(1, dbFlg, "Event comms server started", self.logName)
            
         socket.setdefaulttimeout(self.apcupsdTimeout)
+
+	# obtain the current date/time and determine if it is after the previously-calculated
+	# next check run
+	timeNow = time.time()
+	if timeNow > self.nextUpdateCheck:
+		try:
+			self.pluginPrefs[u'updaterLastCheck'] = timeNow
+			self.nextUpdateCheck = timeNow + self.secondsBetweenUpdateChecks
+
+			# use the updater to check for an update now
+			self.updater.checkForUpdate()
+		except:
+			self.log.logError(u'Error checking for new plugin version')
 
         try:
             self.log.log(1, dbFlg, "Plugin started. Polling apcupsd server(s) every %s minutes with a timeout of %s seconds" %  (self.apcupsdFrequency, int(self.apcupsdTimeout)), self.logName)
