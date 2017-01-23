@@ -53,6 +53,9 @@ def eventServer(self, host, port):
             else:
                 self.log.logError("%s: unauthorized client attempted access from: address: %s port: %s" % (funcName, client_address[0], client_address[1]), self.logName)
 
+        except socket.timeout:
+                pass
+
         except Exception, e:
                 e1 = sys.exc_info()[0]
                 self.log.logError("%s: read loop: Errors %s & %s" % (funcName, e, e1), self.logName)
