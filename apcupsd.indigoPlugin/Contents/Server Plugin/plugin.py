@@ -319,7 +319,10 @@ class Plugin(indigo.PluginBase):
                         dev.setErrorStateOnServer(u'lost comm')
                         self.apcupsdCommError = True
                         for state in dev.states:
-                            dev.updateStateOnServer(key=state, value='n/a', clearErrorState=False)
+                            try:
+                                    dev.updateStateOnServer(key=state, value='n/a', clearErrorState=False)
+                            except:
+                                    dev.updateStateOnServer(key=state, value='n/a')
                             self.log.log(2, dbFlg, "%s: changing state for: %s to n/a" % (funcName, state), self.logName)
                         
                         self.log.log(3, dbFlg, "%s: COMMLOST" % (funcName), self.logName)
@@ -338,11 +341,17 @@ class Plugin(indigo.PluginBase):
                         if self.apcupsdCommError:
                             if metric in self.commLostStatesList:
                                 self.log.log(3, dbFlg, "%s: found commLostStates: %s in list:%s" % (funcName, metric, self.commLostStatesList), self.logName)
-                                dev.updateStateOnServer(key=metric, value=value + ' *', clearErrorState=False)
+                                try:
+                                        dev.updateStateOnServer(key=metric, value=value + ' *', clearErrorState=False)
+                                except:
+                                        dev.updateStateOnServer(key=metric, value=value + ' *')
                             else:
                                 pass
                         else:
-                            dev.updateStateOnServer(key=metric, value=value, clearErrorState=False)
+                            try:
+                                    dev.updateStateOnServer(key=metric, value=value, clearErrorState=False)
+                            except:
+                                    dev.updateStateOnServer(key=metric, value=value)
                         
                         self.log.log(3, dbFlg, "%s: metric:%s, val:%s, is Error:%s" % (funcName, metric, value, self.apcupsdCommError), self.logName)
                 except:
