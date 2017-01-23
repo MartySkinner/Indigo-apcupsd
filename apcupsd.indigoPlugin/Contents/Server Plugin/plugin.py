@@ -51,11 +51,11 @@ def eventServer(self, host, port):
                     self.buildAction(data)
                 client.close()
             else:
-                self.logError("%s: unauthorized client attempted access from: address: %s port: %s" % (funcName, client_address[0], client_address[1]), self.logName)
+                self.log.logError("%s: unauthorized client attempted access from: address: %s port: %s" % (funcName, client_address[0], client_address[1]), self.logName)
 
         except Exception, e:
                 e1 = sys.exc_info()[0]
-                self.logError("%s: read loop: Errors %s & %s" % (funcName, e, e1), self.logName)
+                self.log.logError("%s: read loop: Errors %s & %s" % (funcName, e, e1), self.logName)
                 pass
 
         self.sleep(1)
@@ -228,7 +228,7 @@ class Plugin(indigo.PluginBase):
         try:
             self.log.log(1, dbFlg, "Plugin started. Polling apcupsd server(s) every %s minutes with a timeout of %s seconds" %  (self.apcupsdFrequency, int(self.apcupsdTimeout)), self.logName)
         except:
-            self.log.errorLog("Plugin start delayed pending completion of initial plugin configuration", self.logName)
+            self.log.logError("Plugin start delayed pending completion of initial plugin configuration", self.logName)
             return
 
         try:
@@ -274,6 +274,7 @@ class Plugin(indigo.PluginBase):
 
         sAddress = dev.pluginProps["apcupsdAddress"]
         sPort = dev.pluginProps["apcupsdPort"]
+        self.log.log(4, dbFlg, "%s: doing apcaccess status for address %s on port %s" % (funcName, sAddress, sPort), self.logName)
 
         apcupsdSuccess = False
         apcupsdRetries = 0
@@ -289,11 +290,11 @@ class Plugin(indigo.PluginBase):
             report = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).read()
             result = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).close()
             if result:
-                self.log.logError("%s: Connection to apcaccess failed with error code:%s. Attempt %s of 5" % (funcName, result, apcupsdRetries), self.logName)
+                self.log.logError("%s: Connection to apcaccess failed with error code %s. Attempt %s of 5" % (funcName, result, apcupsdRetries), self.logName)
                 apcupsdSuccess = False
                 self.sleep(1)
             else:
-                self.log.log(4, dbFlg, "%s: report=%s" % (funcName, report), self.logName)
+                self.log.log(4, dbFlg, "%s: report\n%s" % (funcName, report), self.logName)
 
                 result, apcupsdRetries
      
@@ -346,7 +347,7 @@ class Plugin(indigo.PluginBase):
 
             self.log.log(2, dbFlg, "%s:  Completed readings update from device: %s" % (funcName, dev.name), self.logName)
         else:
-            self.log.logError("%s: Failed to get status for UPS %s after %s tries. Will retry in %s minutes" % (funcName, apcupsdRetries, self.apcupsdFrequency), self.logName)
+            self.log.logError("%s: Failed to get status for UPS %s after %s tries. Will retry in %s minutes" % (funcName, dev.name, apcupsdRetries, self.apcupsdFrequency), self.logName)
 
     ########################################
     # Device start, stop, modify and delete
@@ -508,25 +509,26 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
         self.log.log(2, dbFlg, "%s: Entered for dev: %s, and action: %s" % (funcName, dev.name, action.description), self.logName)
-        self.log.log(4, dbFlg, "%s: Receved action: \n%s\n and dev:\n" % (funcName, action, dev), self.logName)
+        self.log.log(4, dbFlg, "%s: Received action: \n%s\n and dev:\n%s" % (funcName, action, dev), self.logName)
         
         deviceId = int(action.deviceId) # Makes t easier to pass in our own events
 
-        self.log.log(2, dbFlg, "%s: found deviceId=%s, actionType=%s" % (funcName, action.deviceId, action.props['actionType']), self.logName)
         # All we have to do for these actons is read from the server... we will get updated states and  do the right thing automatically
         try:
            apcupsdAction = action.props['actionType']
         except:
             apcupsdAction = ''
+        self.log.log(2, dbFlg, "%s: found deviceId=%s, actionType=%s" % (funcName, action.deviceId, apcupsdAction), self.logName)
 
         if action.pluginTypeId == 'readApcupsd':
             self.readApcupsd(dev)
         elif action.pluginTypeId == 'logStatusReport':
             sAddress = indigo.devices[int(action.deviceId)].pluginProps["apcupsdAddress"]
             sPort = indigo.devices[int(action.deviceId)].pluginProps["apcupsdPort"] 
+            self.log.log(4, dbFlg, "%s: doing apcaccess status for address %s on port %s" % (funcName, sAddress, sPort), self.logName)
  
             report = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).read()
-            self.log.log("\n\nFull APCUPSD Status report for %s:\n%s" % (funcName, indigo.devices[int(action.deviceId)].name, report), self.logName)            
+            self.log.log(0, dbFlg, "\n\nFull APCUPSD Status report for %s:\n%s" % (indigo.devices[int(action.deviceId)].name, report), self.logName)
         elif apcupsdAction == 'commfailure':
             dev.setErrorStateOnServer(u'lost comm')
             self.triggerEvent(u'commfailure', deviceId)
