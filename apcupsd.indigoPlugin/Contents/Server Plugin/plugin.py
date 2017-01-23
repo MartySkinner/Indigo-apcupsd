@@ -493,8 +493,23 @@ class Plugin(indigo.PluginBase):
             self.log.logError("%s: Received bad event(2) %s for device %s" % (funcName, event, devid), self.logName)
             return
 
-        devid = int(devid)
-        dev = indigo.devices[devid]
+        try:
+                # and the reason we're taking only a numeric device id and not a string one is...
+#*#                devid = int(devid)
+                pass
+        except ValueError:
+                self.log.logError("%s: Received non-numeric device ID %s for event %s" % (funcName, devid, event), self.logName)
+                return
+        try:
+                dev = indigo.devices[devid]
+        except KeyError:
+                self.log.logError("%s: Unrecognized device ID %s for event %s" % (funcName, devid, event), self.logName)
+                return
+        # check now to see if specified device is really a device created by this plugin...
+        if dev.pluginId != self.pluginId:
+                self.log.logError("%s: Device ID %s is not associated with this plugin for event %s" % (funcName, devid, event), self.logName)
+                return
+
         action = Action()
         action.deviceId = dev.id
         action.props['actionType'] = event
