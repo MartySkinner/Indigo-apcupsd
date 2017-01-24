@@ -143,7 +143,7 @@ class Plugin(indigo.PluginBase):
 
 	# setup the plugin update checker... it will be disabled if the URL is empty
 	self.updater = GitHubPluginUpdater(self)
-	daysBetweenUpdateChecks = 1	#***TMP*** hardcode until we can make it a preference
+	daysBetweenUpdateChecks = string.atof(self.pluginPrefs.get("daysBetweenUpdateChecks", 1))
 	self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
 	self.nextUpdateCheck = 0	# this will force an update check as soon as the plugin is running
 
@@ -153,6 +153,8 @@ class Plugin(indigo.PluginBase):
 	if binary == self.utility_binary:
 		self.utility_binary_found = False
 		self.log.logError("Could not find the '%s' binary. Is the APCUPSD package installed?" % (binary), self.logName)
+
+	self.removeUnits = self.pluginPrefs.get("removeUnits", True)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
 
@@ -184,6 +186,9 @@ class Plugin(indigo.PluginBase):
             if self.useIpConn:
                 self.useIpConnAccess = valuesDict["useIpConnAccess"].split(', ')
                 self.log.log(2, dbFlg, "%s: read access list: %s" % (funcName, self.useIpConnAccess), self.logName)
+            daysBetweenUpdateChecks = string.atoi(valuesDict["daysBetweenUpdateChecks"])
+            self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
+            self.nextUpdateCheck = 0        # this will force an update check starting now
 
             self.log.log(1, dbFlg, "Plugin options reset. Polling apcupsd servers every %s minutes with a %s second timeout and a debug level of %i" % (self.apcupsdFrequency, int(self.apcupsdTimeout), int(valuesDict["showDebugInfo1"])), self.logName)   
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
@@ -212,21 +217,22 @@ class Plugin(indigo.PluginBase):
             self.s.daemon = True
             self.s.start()
             self.log.log(1, dbFlg, "Event comms server started", self.logName)
-           
+
         socket.setdefaulttimeout(self.apcupsdTimeout)
 
-	# obtain the current date/time and determine if it is after the previously-calculated
-	# next check run
-	timeNow = time.time()
-	if timeNow > self.nextUpdateCheck:
-		try:
-			self.pluginPrefs[u'updaterLastCheck'] = timeNow
-			self.nextUpdateCheck = timeNow + self.secondsBetweenUpdateChecks
-
-			# use the updater to check for an update now
-			self.updater.checkForUpdate()
-		except:
-			self.log.logError(u'Error checking for new plugin version')
+        if self.secondsBetweenUpdateChecks > 0:
+                # obtain the current date/time and determine if it is after the previously-calculated
+                # next check run
+                timeNow = time.time()
+                if timeNow > self.nextUpdateCheck:
+                        self.pluginPrefs[u'updaterLastCheck'] = timeNow
+                        self.log.log(3, dbFlg, "# of seconds between update checks: %s" % (int(self.secondsBetweenUpdateChecks)), self.logName)
+                        self.nextUpdateCheck = timeNow + self.secondsBetweenUpdateChecks
+                        # use the updater to check for an update now
+                        try:
+                                self.updater.checkForUpdate()
+                        except:
+                                self.log.logError(u'Error checking for new plugin version', self.logName)
 
         try:
             self.log.log(1, dbFlg, "Plugin started. Polling apcupsd server(s) every %s minutes with a timeout of %s seconds" %  (self.apcupsdFrequency, int(self.apcupsdTimeout)), self.logName)
@@ -307,7 +313,12 @@ class Plugin(indigo.PluginBase):
                     (key,spl,val) = line.partition(': ')
                     key = key.rstrip().lower()
                     val = val.strip()
-                    val = val.split(' ',1)[0] # ignore anything after 1st space
+                    if self.removeUnits is True:
+                        test = val.split()
+                        if len(test) >= 2:
+                            unit = test[1] # is there a "units" keyword here?
+                            if unit == 'Seconds' or unit == 'Minutes' or unit == 'Hours' or unit == 'Watts' or unit == 'Volts' or unit == 'Percent':
+                                val = test[0] # ignore anything after 1st space
                     if key != '':
                         metrics[key] = val
                         self.log.log(4, dbFlg, "%s: parsed key=%s and val=%s" % (funcName, key, val), self.logName)
