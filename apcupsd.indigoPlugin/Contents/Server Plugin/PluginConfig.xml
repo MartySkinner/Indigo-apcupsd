@@ -46,6 +46,30 @@
 		</List>
 	</Field>
 
+	<Field id="removeUnits" type="checkbox" defaultValue="true" >
+		<Label>Remove 'units' from state values?:</Label>
+	</Field>
+	<Field id="label3" type="label" alignText="rght" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="removeUnits" visibleBindingValue="true">
+		<Label>'Units' are words such as Seconds, Hours, Watts, Percent, etc.</Label>
+	</Field>
+	<Field id="daysBetweenUpdateChecks" type="menu" defaultValue="1" >
+		<Label>Days between software update checks?:</Label>
+		<List>
+			<Option value="0">Disabled</Option>
+			<Option value="1">1</Option>
+			<Option value="2">2</Option>
+			<Option value="3">3</Option>
+			<Option value="4">4</Option>
+			<Option value="5">5</Option>
+			<Option value="6">6</Option>
+			<Option value="7">7</Option>
+			<Option value="14">14</Option>
+			<Option value="30">30</Option>
+		</List>
+	</Field>
+
+	<Field id="pcSep2" type="separator" />
+
 	<Field id="useIpConn" type="checkbox" defaultValue="false" >
 		<Label>Use IP Socket for events?:</Label>
 	</Field>
@@ -54,7 +78,7 @@
 	</Field>
 
 	<Field id="label1" type="label" alignText="rght" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
-		<Label>Ths port will be used for incomming event connections.</Label>
+		<Label>Ths port will be used for incoming event connections.</Label>
 	</Field>
 
 	<Field id="useIpConnAccess" type="textfield" defaultValue="127.0.0.1" visibleBindingId="useIpConn" visibleBindingValue="true">
@@ -62,7 +86,7 @@
 	</Field>
 
 	<Field id="label2" type="label" alignText="rght" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
-		<Label>Enter a comma separated list of IP Addresses.</Label>
+		<Label>Enter a comma separated list of IP addresses.</Label>
 	</Field>
 
 	<Field id="pcSep1" type="separator" />
