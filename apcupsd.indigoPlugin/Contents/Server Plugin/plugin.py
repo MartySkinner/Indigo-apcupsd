@@ -194,10 +194,14 @@ class Plugin(indigo.PluginBase):
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
 
     ########################################
-    # this is called by the custom menu item
+    # this is also called by the custom menu item
     ########################################
     def checkForUpdates(self):
-	self.updater.checkForUpdate()
+        update = self.updater.getLatestRelease()
+        if update == None:
+                self.log.logError("Error encountered checking for a new plugin version", self.logName)
+        else:
+                update = self.updater.checkForUpdate()
 
     ########################################
     def runConcurrentThread(self):
@@ -229,10 +233,7 @@ class Plugin(indigo.PluginBase):
                         self.log.log(3, dbFlg, "# of seconds between update checks: %s" % (int(self.secondsBetweenUpdateChecks)), self.logName)
                         self.nextUpdateCheck = timeNow + self.secondsBetweenUpdateChecks
                         # use the updater to check for an update now
-                        try:
-                                self.updater.checkForUpdate()
-                        except:
-                                self.log.logError(u'Error checking for new plugin version', self.logName)
+                        self.checkForUpdates()
 
         try:
             self.log.log(1, dbFlg, "Plugin started. Polling apcupsd server(s) every %s minutes with a timeout of %s seconds" %  (self.apcupsdFrequency, int(self.apcupsdTimeout)), self.logName)
