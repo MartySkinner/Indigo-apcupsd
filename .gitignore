@@ -1,2 +1,9 @@
-*.pyc
+*.py[cod]
+*.py.orig
+
 build/
+dist/
+future/
+
+.DS_Store
+.DS_Store?
