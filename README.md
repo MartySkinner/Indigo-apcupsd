@@ -1,6 +1,6 @@
 # acpupsd
 
-Note: This plugin **requires** the apcupsd software package (http://www.apcupsd.org) to be installed and running on whatever machine your UPS is connected to.
+Note: This Indigo home automation plugin **requires** the apcupsd software package (http://www.apcupsd.org) to be installed and running on whatever machine your UPS is connected to.
 
 This plugin release has been tested with Indigo 5, 6 and 7. It's possible it might work in earlier versions of Indigo, but no testing has been done on them.
 
@@ -14,6 +14,7 @@ Once configured, the plugin will allow you to create an Indigo device for each a
 ## Device Configuration
 
 When creating an apcupsd plugin device, you need to:
+
 * Provide an IP Address. If you have the apcupsd software package running on the same machine as your Indigo server, select the default **local host**. Otherwise select **Will Specify** and enter the remote IP Address in the textfield that appears.
 * Enter the port number. The default of 3551 should be correct for most installations.
 * Select the UPS Report Fields you wish to use for states in this device. The default set contains the fields that are most likely to be of interest. Buttons are available to:
