@@ -145,13 +145,17 @@ class Plugin(indigo.PluginBase):
         self.updater = GitHubPluginUpdater(self)
         daysBetweenUpdateChecks = string.atof(self.pluginPrefs.get("daysBetweenUpdateChecks", 1))
         self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
-        self.nextUpdateCheck = 0        # this will force an update check as soon as the plugin is running
+        self.nextUpdateCheck = 0  # this will force an update check as soon as the plugin is running
 
-        binary = "apcaccess"
-        self.utility_binary = find_in_path(self, binary, "/usr/local/sbin:/sbin")
-        self.utility_binary_found = True
-        if binary == self.utility_binary:
-                self.utility_binary_found = False
+        binaryName = "apcaccess"
+        utilityBinaryPath = self.pluginPrefs.get("utilityPath", "")
+        if utilityBinaryPath == "":
+                utilityBinaryPath = "/usr/local/sbin:/sbin"
+        self.utilityBinary = find_in_path(self, binaryName, utilityBinaryPath)
+        if binaryName != self.utilityBinary:
+                self.utilityBinaryFound = True
+        else:
+                self.utilityBinaryFound = False
                 self.log.logError("Could not find the '%s' binary. Is the APCUPSD package installed?" % (binary), self.logName)
 
         self.removeUnits = self.pluginPrefs.get("removeUnits", True)
@@ -210,7 +214,7 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
         self.startingUp = False
-        if self.utility_binary_found is False:
+        if self.utilityBinaryFound is False:
             self.log.logError("Plugin being shutdown pending installation of the APCUPSD package", self.logName)
             self.stopPlugin()
             self.sleep(10)  # give it a few seconds for the stopPlugin to take effect, othewise this thread continues
@@ -297,8 +301,8 @@ class Plugin(indigo.PluginBase):
 
             apcupsdRetries = apcupsdRetries + 1
 
-            report = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).read()
-            result = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).close()
+            report = os.popen(self.utilityBinary + " status " + sAddress + " " + sPort).read()
+            result = os.popen(self.utilityBinary + " status " + sAddress + " " + sPort).close()
             if result:
                 self.log.logError("%s: Connection to apcaccess failed with error code %s. Attempt %s of 5" % (funcName, result, apcupsdRetries), self.logName)
                 apcupsdSuccess = False
@@ -566,12 +570,12 @@ class Plugin(indigo.PluginBase):
             sPort = indigo.devices[int(action.deviceId)].pluginProps["apcupsdPort"]
             self.log.log(4, dbFlg, "%s: doing apcaccess status for address %s on port %s" % (funcName, sAddress, sPort), self.logName)
 
-            report = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).read()
+            report = os.popen(self.utilityBinary + " status " + sAddress + " " + sPort).read()
             self.log.log(0, dbFlg, "\n\nFull APCUPSD Status report for %s:\n%s" % (indigo.devices[int(action.deviceId)].name, report), self.logName)
         elif apcupsdAction == 'commfailure':
             dev.setErrorStateOnServer(u'lost comm')
             self.triggerEvent(u'commfailure', deviceId)
-            # self.apcupsdCommError = True ## we'll try letting readApcupsd manage this
+            # self.apcupsdCommError = True  ## we'll try letting readApcupsd manage this
             self.readApcupsd(dev)
         elif apcupsdAction == 'commok':
             dev.setErrorStateOnServer(None)
