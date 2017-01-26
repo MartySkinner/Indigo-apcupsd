@@ -15,7 +15,7 @@ import os
 import socket
 import string
 import sys
-import threading 
+import threading
 import urllib
 import indigo
 import time
@@ -24,27 +24,27 @@ import time
 # Globals
 ################################################################################
 
-def eventServer(self, host, port): 
+def eventServer(self, host, port):
     funcName = inspect.stack()[0][3]
     dbFlg = False
     self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
     self.log.log(3, dbFlg, "%s: received address: %s and port: %s" % (funcName, host, port), self.logName)
 
-    size = 24 
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-    server.bind((host, port)) 
-    server.listen(5) 
+    size = 24
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((host, port))
+    server.listen(5)
 
     self.log.log(2, dbFlg, "%s: started listening on %s" % (funcName, server.getsockname()), self.logName)
 
-    while self.serverRun: 
+    while self.serverRun:
         try:
             self.log.log(4, dbFlg, "%s: waiting for a connection" % (funcName), self.logName)
             client, client_address = server.accept()
 
             self.log.log(3, dbFlg, "%s: client connected from, address: %s port: %s" % (funcName, client_address[0], client_address[1]), self.logName)
 
-            if client_address[0] in self.useIpConnAccess: 
+            if client_address[0] in self.useIpConnAccess:
                 data = client.recv(size)
                 if  data:
                     self.log.log(3, dbFlg, "%s: received %s" % (funcName, data), self.logName)
@@ -141,20 +141,20 @@ class Plugin(indigo.PluginBase):
         self.readLoop = True
         self.startingUp = True
 
-	# setup the plugin update checker... it will be disabled if the URL is empty
-	self.updater = GitHubPluginUpdater(self)
-	daysBetweenUpdateChecks = string.atof(self.pluginPrefs.get("daysBetweenUpdateChecks", 1))
-	self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
-	self.nextUpdateCheck = 0	# this will force an update check as soon as the plugin is running
+        # setup the plugin update checker... it will be disabled if the URL is empty
+        self.updater = GitHubPluginUpdater(self)
+        daysBetweenUpdateChecks = string.atof(self.pluginPrefs.get("daysBetweenUpdateChecks", 1))
+        self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
+        self.nextUpdateCheck = 0        # this will force an update check as soon as the plugin is running
 
-	binary = "apcaccess"
-	self.utility_binary = find_in_path(self, binary, "/usr/local/sbin:/sbin")
-	self.utility_binary_found = True
-	if binary == self.utility_binary:
-		self.utility_binary_found = False
-		self.log.logError("Could not find the '%s' binary. Is the APCUPSD package installed?" % (binary), self.logName)
+        binary = "apcaccess"
+        self.utility_binary = find_in_path(self, binary, "/usr/local/sbin:/sbin")
+        self.utility_binary_found = True
+        if binary == self.utility_binary:
+                self.utility_binary_found = False
+                self.log.logError("Could not find the '%s' binary. Is the APCUPSD package installed?" % (binary), self.logName)
 
-	self.removeUnits = self.pluginPrefs.get("removeUnits", True)
+        self.removeUnits = self.pluginPrefs.get("removeUnits", True)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
 
@@ -163,7 +163,7 @@ class Plugin(indigo.PluginBase):
         indigo.PluginBase.__del__(self)
 
     ########################################
-    def startup(self): 
+    def startup(self):
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(1, dbFlg, "%s: Plugin Starting" % (funcName), self.logName)
@@ -190,7 +190,7 @@ class Plugin(indigo.PluginBase):
             self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
             self.nextUpdateCheck = 0        # this will force an update check starting now
 
-            self.log.log(1, dbFlg, "Plugin options reset. Polling apcupsd servers every %s minutes with a %s second timeout and a debug level of %i" % (self.apcupsdFrequency, int(self.apcupsdTimeout), int(valuesDict["showDebugInfo1"])), self.logName)   
+            self.log.log(1, dbFlg, "Plugin options reset. Polling apcupsd servers every %s minutes with a %s second timeout and a debug level of %i" % (self.apcupsdFrequency, int(self.apcupsdTimeout), int(valuesDict["showDebugInfo1"])), self.logName)
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
 
     ########################################
@@ -210,10 +210,10 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
         self.startingUp = False
-	if self.utility_binary_found is False:
+        if self.utility_binary_found is False:
             self.log.logError("Plugin being shutdown pending installation of the APCUPSD package", self.logName)
-	    self.stopPlugin()
-	    self.sleep(10) # give it a few seconds for the stopPlugin to take effect, othewise this thread continues
+            self.stopPlugin()
+            self.sleep(10)  # give it a few seconds for the stopPlugin to take effect, othewise this thread continues
 
         if self.useIpConn:
             port = int(self.pluginPrefs["useIpConnPort"])
@@ -246,7 +246,7 @@ class Plugin(indigo.PluginBase):
                 self.readLoop = True
                 prId = "com.berkinet.apcupsd"
                 devCount = 0
-                for dev in indigo.devices.iter(prId):    
+                for dev in indigo.devices.iter(prId):
                     if dev.enabled:
                         devCount += 1
                         self.log.log(2, dbFlg, "%s: Got device %s from Indigo" % (funcName, dev.name), self.logName)
@@ -261,7 +261,7 @@ class Plugin(indigo.PluginBase):
                     else:
                         devWord = "devices"
                     self.log.log(2, dbFlg, "%s: Completed device poll. %s %s found" % (funcName, devCount, devWord), self.logName)
-                
+
                 # we sleep (apcupsdFrequency minutes) between reads - in 1 sec increments so we can be interupted
                 count = 0
                 while count < self.apcupsdFrequency * 60 and self.readLoop:
@@ -307,7 +307,7 @@ class Plugin(indigo.PluginBase):
                 self.log.log(4, dbFlg, "%s: report\n%s" % (funcName, report), self.logName)
 
                 result, apcupsdRetries
-     
+
                 metrics = {}
 
                 for line in report.split('\n'):
@@ -319,7 +319,7 @@ class Plugin(indigo.PluginBase):
                         if len(test) >= 2:
                             unit = test[1] # is there a "units" keyword here?
                             if unit == 'Seconds' or unit == 'Minutes' or unit == 'Hours' or unit == 'Watts' or unit == 'Volts' or unit == 'Percent':
-                                val = test[0] # ignore anything after 1st space
+                                val = test[0]  # ignore anything after 1st space
                     if key != '':
                         metrics[key] = val
                         self.log.log(4, dbFlg, "%s: parsed key=%s and val=%s" % (funcName, key, val), self.logName)
@@ -336,7 +336,7 @@ class Plugin(indigo.PluginBase):
                             except:
                                     dev.updateStateOnServer(key=state, value='n/a')
                             self.log.log(2, dbFlg, "%s: changing state for: %s to n/a" % (funcName, state), self.logName)
-                        
+
                         self.log.log(3, dbFlg, "%s: COMMLOST" % (funcName), self.logName)
                     elif metrics['status'] != 'COMMLOST' and self.apcupsdCommError:
                         dev.setErrorStateOnServer(None)
@@ -344,7 +344,7 @@ class Plugin(indigo.PluginBase):
                         self.log.log(3, dbFlg, "%s: ONLINE" % (funcName), self.logName)
 
         if apcupsdSuccess:
-            for metric in metrics: 
+            for metric in metrics:
                 value = metrics[metric]
                 try:
                     if metric in dev.states:
@@ -364,7 +364,7 @@ class Plugin(indigo.PluginBase):
                                     dev.updateStateOnServer(key=metric, value=value, clearErrorState=False)
                             except:
                                     dev.updateStateOnServer(key=metric, value=value)
-                        
+
                         self.log.log(3, dbFlg, "%s: metric:%s, val:%s, is Error:%s" % (funcName, metric, value, self.apcupsdCommError), self.logName)
                 except:
                     self.log.logError("%s: error writing device state" % (funcName), self.logName)
@@ -411,7 +411,7 @@ class Plugin(indigo.PluginBase):
             self.readLoop = False
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
-        return False # Don't bother callng devStartComm or devStopComm, we took care of restarting the read loop already
+        return False  # Don't bother callng devStartComm or devStopComm, we took care of restarting the read loop already
 
     ########################################
     def deviceDeleted(self, dev):
@@ -443,7 +443,7 @@ class Plugin(indigo.PluginBase):
 
         self.log.log(2, dbFlg, "%s trigger %s started" % (funcName, trigger.name), self.logName)
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
- 
+
     ########################################
     def triggerStopProcessing(self, trigger):
         funcName = inspect.stack()[0][3]
@@ -455,10 +455,10 @@ class Plugin(indigo.PluginBase):
         if trigger.id in self.triggerDict:
             self.log.log(2, dbFlg, "%s trigger %s found" % (funcName, trigger.name), self.logName)
             del self.triggerDict[trigger.id]
-       
+
         self.log.log(2, dbFlg, "%s trigger %s deleted" % (funcName, trigger.name), self.logName)
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
- 
+
     ########################################
     #def triggerUpdated(self, origDev, newDev):
     #   self.log.log(4, u"<<-- entering triggerUpdated: %s" % origDev.name)
@@ -493,13 +493,13 @@ class Plugin(indigo.PluginBase):
     ########################################
     #  Action callbacks
     #
- 
+
     ########################################
     def buildAction(self, event):
         funcName = inspect.stack()[0][3]
         dbFlg = True
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
- 
+
         try:
             devid, event = event.split(':')
             self.log.log(3, dbFlg, "%s: Received event %s for device %s" % (funcName, event, devid), self.logName)
@@ -549,7 +549,7 @@ class Plugin(indigo.PluginBase):
 
         self.log.log(2, dbFlg, "%s: Entered for dev: %s, and action: %s" % (funcName, dev.name, action.description), self.logName)
         self.log.log(4, dbFlg, "%s: Received action: \n%s\n and dev:\n%s" % (funcName, action, dev), self.logName)
-        
+
         deviceId = int(action.deviceId) # Makes t easier to pass in our own events
 
         # All we have to do for these actons is read from the server... we will get updated states and  do the right thing automatically
@@ -563,9 +563,9 @@ class Plugin(indigo.PluginBase):
             self.readApcupsd(dev)
         elif action.pluginTypeId == 'logStatusReport':
             sAddress = indigo.devices[int(action.deviceId)].pluginProps["apcupsdAddress"]
-            sPort = indigo.devices[int(action.deviceId)].pluginProps["apcupsdPort"] 
+            sPort = indigo.devices[int(action.deviceId)].pluginProps["apcupsdPort"]
             self.log.log(4, dbFlg, "%s: doing apcaccess status for address %s on port %s" % (funcName, sAddress, sPort), self.logName)
- 
+
             report = os.popen(self.utility_binary + " status " + sAddress + " " + sPort).read()
             self.log.log(0, dbFlg, "\n\nFull APCUPSD Status report for %s:\n%s" % (indigo.devices[int(action.deviceId)].name, report), self.logName)
         elif apcupsdAction == 'commfailure':
@@ -576,7 +576,7 @@ class Plugin(indigo.PluginBase):
         elif apcupsdAction == 'commok':
             dev.setErrorStateOnServer(None)
             self.triggerEvent(u'commok', dev.id)
-            self.apcupsdCommError = True 
+            self.apcupsdCommError = True
             self.readApcupsd(dev)
         elif apcupsdAction == 'annoyme':
             self.triggerEvent(u'annoyme', deviceId)
@@ -704,7 +704,7 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s: received device: %s" % (funcName, dev), self.logName)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
-        return dev.pluginProps['apcupsdDevceStateDisplay'] 
+        return dev.pluginProps['apcupsdDevceStateDisplay']
 
    ########################################
     def getDeviceStateList(self, dev):
@@ -714,7 +714,7 @@ class Plugin(indigo.PluginBase):
 
         self.log.log(2, dbFlg, "%s: received device:\n%s\n" % (funcName, dev), self.logName)
 
-        statesList = [] 
+        statesList = []
         stateKey = 'status'
         stateDict = {'Disabled': False, 'Key': stateKey, 'StateLabel': stateKey, 'TriggerLabel': stateKey, 'Type': 100}
         statesList.append(stateDict)
