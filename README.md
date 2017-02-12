@@ -1,8 +1,12 @@
-# acpupsd
+# acpupsd Plugin
 
-Note: This Indigo home automation plugin **requires** the apcupsd software package (http://www.apcupsd.org) to be installed and running on whatever machine your UPS is connected to.
+> Because of the volatile nature of individual components within GitHub repositories such as this one, [__please only download actual releases__](../../releases). Any other downloads may result in an incomplete plugin, repeated errors in the Indigo log and/or incorrect behavior of the plugin.
 
-This plugin release has been tested with Indigo 5, 6 and 7. It's possible it might work in earlier versions of Indigo, but no testing has been done on them.
+> Note: This plugin **requires** the separate apcupsd software package (<http://www.apcupsd.org>) to be installed and running on whatever machine your APC UPS is connected to.
+
+This is a software plugin for the [Indigo home automation software](http://www.indigodomo.com). The plugin allows access to the current state information for many models of [APC](http://www.apc.com) UPSes.
+
+Unless otherwise noted, this plugin's releases should work with Indigo 5, 6 and 7. It is possible it might work in earlier versions of Indigo, but no testing has been done on them.
 
 ## Plugin Configuration
 
@@ -72,7 +76,7 @@ This project is licensed using [Unlicense](http://unlicense.org/).
 
 ## Plugin ID
 
-Here's the plugin ID in case you need to programmatically restart the plugin:
+Here is the plugin ID in case you need to programmatically restart the plugin:
 
-**Plugin ID**: com.berkinet.apcupsd
+**Plugin ID**: com.martys.apcupsd
 
