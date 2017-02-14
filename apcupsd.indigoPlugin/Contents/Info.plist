@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>PluginVersion</key>
-	<string>0.4.6</string>
+	<string>0.5.0</string>
 	<key>ServerApiVersion</key>
 	<string>1.0.0</string>
 	<key>IwsApiVersion</key>
@@ -11,7 +11,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>apcupsd</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.berkinet.apcupsd</string>
+	<string>com.martys.apcupsd</string>
 	<key>CFBundleVersion</key>
 	<string>1.0.0</string>
 	<key>CFBundleURLTypes</key>
