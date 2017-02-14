@@ -49,8 +49,8 @@
 	<Field id="removeUnits" type="checkbox" defaultValue="true" >
 		<Label>Remove 'units' from state values?:</Label>
 	</Field>
-	<Field id="label3" type="label" alignText="rght" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="removeUnits" visibleBindingValue="true">
-		<Label>'Units' are words such as Seconds, Hours, Watts, Percent, etc.</Label>
+	<Field id="label3" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="removeUnits" visibleBindingValue="true">
+		<Label> 	'Units' are words such as Seconds, Hours, Watts, Percent, etc.</Label>
 	</Field>
 	<Field id="daysBetweenUpdateChecks" type="menu" defaultValue="1" >
 		<Label>Days between software update checks?:</Label>
@@ -77,7 +77,7 @@
 		<Label>Local TCP Port:</Label>
 	</Field>
 
-	<Field id="label1" type="label" alignText="rght" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
+	<Field id="label1" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
 		<Label>Ths port will be used for incoming event connections.</Label>
 	</Field>
 
@@ -85,11 +85,23 @@
 		<Label>Allow connections from:</Label>
 	</Field>
 
-	<Field id="label2" type="label" alignText="rght" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
+	<Field id="label2" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
 		<Label>Enter a comma separated list of IP addresses.</Label>
 	</Field>
 
 	<Field id="pcSep1" type="separator" />
+
+	<Field id="overridePath" type="checkbox" defaultValue="false">
+		<Label>Override apcaccess utility path:</Label>
+		<Description>(Not Recommended)</Description>
+	</Field>
+	<Field id="utilityPath" type="textfield" visibleBindingId="overridePath" visibleBindingValue="true">
+		<Label>Enter path(s):</Label>
+	</Field>
+	<Field id="utilityPathL" type="label" visibleBindingId="overridePath" visibleBindingValue="true">
+		<Label>		If you enter more than one path, separate them with a colon (:)</Label>
+	</Field>
+	<Field id="pcSep1b" type="separator" />
 
 	<Field id="showDebugInfo1" type="menu" defaultValue="1">
 		<Label>Logging level</Label>

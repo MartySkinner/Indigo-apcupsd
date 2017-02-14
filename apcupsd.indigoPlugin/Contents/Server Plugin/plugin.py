@@ -67,7 +67,7 @@ def eventServer(self, host, port):
     self.log.log(2, dbFlg, "%s server closed" % (funcName), self.logName)
 
 ########################################
-def find_in_path(self, file_name, def_path=os.defpath):
+def findInPath(self, file_name, def_path=os.defpath):
         funcName = inspect.stack()[0][3]
         dbFlg = False
         path = os.getenv('PATH', def_path)
@@ -146,18 +146,19 @@ class Plugin(indigo.PluginBase):
         self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
         self.nextUpdateCheck = 0  # this will force an update check as soon as the plugin is running
 
-        binaryName = "apcaccess"
-        utilityBinaryPath = self.pluginPrefs.get("utilityPath", "")
-        if utilityBinaryPath == "":
-                utilityBinaryPath = "/usr/local/sbin:/sbin"
-        self.utilityBinary = find_in_path(self, binaryName, utilityBinaryPath)
-        if binaryName != self.utilityBinary:
+        self.utilityBinaryName = "apcaccess"
+        utilityBinaryPath = "/usr/local/sbin:/sbin"
+        if self.pluginPrefs.get("overridePath", False) and self.pluginPrefs.get("utilityPath", "") != "":
+                utilityBinaryPath = self.pluginPrefs["utilityPath"]
+        self.utilityBinary = findInPath(self, self.utilityBinaryName, utilityBinaryPath)
+        if self.utilityBinaryName != self.utilityBinary:
                 self.utilityBinaryFound = True
         else:
                 self.utilityBinaryFound = False
-                self.log.logError("Could not find the '%s' binary. Is the APCUPSD package installed?" % (binary), self.logName)
+                self.log.logError("Could not find the '%s' binary. Is the APCUPSD package installed?" % (self.utilityBinaryName), self.logName)
 
         self.removeUnits = self.pluginPrefs.get("removeUnits", True)
+        self.logLevel = self.pluginPrefs.get("showDebugInfo1", 1)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
 
@@ -192,6 +193,13 @@ class Plugin(indigo.PluginBase):
             daysBetweenUpdateChecks = string.atoi(valuesDict["daysBetweenUpdateChecks"])
             self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
             self.nextUpdateCheck = 0        # this will force an update check starting now
+            self.logLevel = string.atoi(valuesDict["showDebugInfo1"])
+
+            if valuesDict[u"overridePath"] and valuesDict[u"utilityPath"] != "":
+                utilityBinaryPath = valuesDict[u"utilityPath"]
+                utilityBinary = findInPath(self, self.utilityBinaryName, utilityBinaryPath)
+                if self.utilityBinaryName != utilityBinary:
+                        self.utilityBinaryPath = utilityBinary
 
             self.log.log(1, dbFlg, "Plugin options reset. Polling apcupsd servers every %s minutes with a %s second timeout and a debug level of %i" % (self.apcupsdFrequency, int(self.apcupsdTimeout), int(valuesDict["showDebugInfo1"])), self.logName)
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
@@ -214,9 +222,11 @@ class Plugin(indigo.PluginBase):
 
         self.startingUp = False
         if self.utilityBinaryFound is False:
-            self.log.logError("Plugin being shutdown pending installation of the APCUPSD package", self.logName)
-            self.stopPlugin()
-            self.sleep(10)  # give it a few seconds for the stopPlugin to take effect, othewise this thread continues
+#*#            self.log.logError("Plugin being shutdown pending installation of the APCUPSD package", self.logName)
+#*#            self.stopPlugin()
+#*#            self.sleep(10)  # give it a few seconds for the stopPlugin to take effect, othewise this thread continues
+                self.sleep(60*5)
+                return
 
         if self.useIpConn:
             port = int(self.pluginPrefs["useIpConnPort"])
@@ -739,7 +749,7 @@ class Plugin(indigo.PluginBase):
         return(statesList)
 
     ########################################
-    # UI validation
+    # UI validation for devices
     def validateDeviceConfigUi(self, valuesDict, typeId, devId):
         funcName = inspect.stack()[0][3]
         dbFlg = False
@@ -748,8 +758,33 @@ class Plugin(indigo.PluginBase):
 
         if valuesDict[u'apcupsdAddressType'] == 'localhost':
             valuesDict[u'apcupsdAddress'] = '127.0.0.1'
-
         self.log.log(3, dbFlg, "%s:  returned:%s" % (funcName, valuesDict), self.logName)
 
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
         return (True, valuesDict)
+
+    ########################################
+    # UI validation for the plugin configuration
+    def validatePrefsConfigUi(self, valuesDict):
+        funcName = inspect.stack()[0][3]
+        dbFlg = False
+        validationErr = False
+        errorDict = indigo.Dict()
+        self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
+        self.log.log(3, dbFlg, "%s: received:\n>>valuesDict\n%s\n" % (funcName, valuesDict), self.logName)
+
+        if valuesDict[u"overridePath"] and valuesDict[u"utilityPath"] != "":
+                utilityBinaryPath = valuesDict[u"utilityPath"]
+                utilityBinary = findInPath(self, self.utilityBinaryName, utilityBinaryPath)
+                if self.utilityBinaryName == utilityBinary:
+                        validationErr = True
+                        errorDict["utilityPath"] = "'%s' utility not found in this path" % (self.utilityBinaryName)
+                        errorDict["showAlertText"] = "You must specify the UNIX-style path to the '%s' binary." % (self.utilityBinaryName)
+
+        self.log.log(3, dbFlg, "%s:  returned:%s" % (funcName, valuesDict), self.logName)
+
+        self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
+        if validationErr is False:
+                return (True, valuesDict)
+        else:
+                return (False, valuesDict, errorDict)
