@@ -84,9 +84,9 @@ def find_in_path(self, file_name, def_path=os.defpath):
          # delayAmount : 900
             # description : plugin action
             # * deviceId : 145579207
-            # pluginId : com.berkinet.apcupsd
+            # pluginId : <ourPluginId>
             # * pluginTypeId : apcupsdServerEvent
-            # * props : com.berkinet.apcupsd : (dict)
+            # * props : <ourPluginId> : (dict)
             #      actionType : commok (string)
             # replaceExisting : True
             # textToSpeak : 
@@ -95,7 +95,6 @@ class Action(object):
     def __init__(self):
         self.description = 'plugin generated action'
         self.deviceId = 0
-        self.pluginId = 'com.berkinet.apcupsd'
         self.pluginTypeId = None
         self.props = {'actionType': None}
     def __str__(self):
@@ -248,9 +247,8 @@ class Plugin(indigo.PluginBase):
         try:
             while True:
                 self.readLoop = True
-                prId = "com.berkinet.apcupsd"
                 devCount = 0
-                for dev in indigo.devices.iter(prId):
+                for dev in indigo.devices.iter(self.pluginId):
                     if dev.enabled:
                         devCount += 1
                         self.log.log(2, dbFlg, "%s: Got device %s from Indigo" % (funcName, dev.name), self.logName)
@@ -536,6 +534,7 @@ class Plugin(indigo.PluginBase):
                 return
 
         action = Action()
+        action.pluginId = self.pluginId
         action.deviceId = dev.id
         action.props['actionType'] = event
 
