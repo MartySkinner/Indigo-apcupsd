@@ -31,9 +31,14 @@ def eventServer(self, host, port):
     self.log.log(3, dbFlg, "%s: received address: %s and port: %s" % (funcName, host, port), self.logName)
 
     size = 24
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((host, port))
-    server.listen(5)
+    try:
+            server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server.bind((host, port))
+            server.listen(5)
+    except Exception, e:
+            e1 = sys.exc_info()[0]
+            self.log.logError("%s: problem with socket: Errors %s & %s" % (funcName, e, e1), self.logName)
+            return
 
     self.log.log(2, dbFlg, "%s: started listening on %s" % (funcName, server.getsockname()), self.logName)
 
