@@ -293,7 +293,7 @@ class Plugin(indigo.PluginBase):
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
 
     ########################################
-    def readApcupsd(self, dev):
+    def readApcupsd(self, dev, parseOnly=False):
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
@@ -343,6 +343,8 @@ class Plugin(indigo.PluginBase):
 
                 if 'status' in metrics:
                     apcupsdSuccess = True
+                    if parseOnly:
+                            return (True, metrics)
 
                     if metrics['status'] == 'COMMLOST' and not self.apcupsdCommError:
                         dev.setErrorStateOnServer(u'lost comm')
@@ -359,6 +361,8 @@ class Plugin(indigo.PluginBase):
                         dev.setErrorStateOnServer(None)
                         self.apcupsdCommError = False
                         self.log.log(3, dbFlg, "%s: ONLINE" % (funcName), self.logName)
+                else:
+                        return (False, metrics)
 
         if apcupsdSuccess:
             for metric in metrics:
@@ -696,21 +700,33 @@ class Plugin(indigo.PluginBase):
         return(valuesDict)
 
     ########################################
-    def apcupsdBrowserOpen (self, valuesDict, typeId, devId ):
+    def selectQueryDevice(self, valuesDict, typeId, devId):
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
-        self.log.log(2, dbFlg, "%s: received:\n>>valuesDict\n%s\n>>typeId\n%s\n>>devId\n%s\n" % (funcName, valuesDict, typeId, devId), self.logName)
+        self.log.log(4, dbFlg, "%s: received:\n>>valuesDict\n%s\n>>typeId\n%s\n>>devId\n%s\n" % (funcName, valuesDict, typeId, devId), self.logName)
 
-        self.log.log(2, dbFlg, "%s: Path=%s" % (funcName, indigo.server.getInstallFolderPath()), self.logName)
-        # manual_locale = r"file:///Library/Application Support/Perceptive Automation/Indigo 6/Plugins/Plugins/apcupsd.indigoPlugin/Contents/Resources/reportFields.txt"
-        docPath = r'file://' + urllib.quote(indigo.server.getInstallFolderPath()) + r'/Plugins/apcupsd.indigoPlugin/Contents/Resources/reportFields.html'
-        self.log.log(2, dbFlg, "%s: Path=%s" %  (funcName, docPath), self.logName)
-        indigo.activePlugin.browserOpen(docPath)
+        for key in valuesDict:
+           if key.find('apcupsdState') != -1:
+                valuesDict[key] = False
+
+        (returnStatus, metrics) = self.readApcupsd(indigo.devices[int(devId)], True)
+        if returnStatus == True:
+                self.log.log(4, dbFlg, "%s: returned\n>>device values\n%s\n" % (funcName, metrics), self.logName)
+                for metric in metrics:
+                        key = "apcupsdState" + metric.upper()
+                        try:
+                                if key in valuesDict:
+                                        self.log.log(3, dbFlg, "%s: found matching state: %s " % (funcName, metric), self.logName)
+                                        valuesDict[key] = True
+                        except:
+                                pass
+        else:
+                self.log.log(2, dbFlg, "%s: Cannot determine which states device %s might provide" % (funcName, devId.name), self.logName)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
-        return
+        return(valuesDict)
 
     ########################################
     # editing of props
