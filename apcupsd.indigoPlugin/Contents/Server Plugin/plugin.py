@@ -210,10 +210,36 @@ class Plugin(indigo.PluginBase):
             self.apcupsdTimeout = string.atof(valuesDict["apcupsdTimeout"])
             socket.setdefaulttimeout(self.apcupsdTimeout)
             self.apcupsdFrequency = string.atof(valuesDict["apcupsdFrequency"])
+            lastUseIpConn = self.useIpConn
             self.useIpConn = valuesDict["useIpConn"]
             if self.useIpConn:
                 self.useIpConnAccess = valuesDict["useIpConnAccess"].split(', ')
                 self.log.log(2, dbFlg, "%s: read access list: %s" % (funcName, self.useIpConnAccess), self.logName)
+                if lastUseIpConn:
+                        self.log.log(2, dbFlg, "Event comms server asked to stop", self.logName)
+                        # because we may have new preferences to put into play, ask any currently running server to stop what its doing
+                        self.serverRun = False
+                        self.s.join(20)
+                        cnt = 0
+                        while cnt < 10 and self.s.isAlive():
+                                self.sleep(1)
+                                cnt = cnt + 1
+                        self.log.log(3, dbFlg, "%s: Event comms server needed %s delays to stop" % (funcName, cnt), self.logName)
+                self.serverRun = True
+                port = int(valuesDict["useIpConnPort"])
+                self.s = threading.Thread(target=eventServer, args=[self, '0.0.0.0', port])
+                self.s.daemon = True
+                self.s.start()
+                self.sleep(5)
+                if self.s.isAlive():
+                        self.log.log(2, dbFlg, "Event comms server started", self.logName)
+                else:
+                        self.log.logError("Event comms server failed to start", self.logName)
+            else:
+                self.log.log(2, dbFlg, "Event comms server asked to stop", self.logName)
+                # since we don't need a server now, ask any currently running server to stop what its doing
+                self.serverRun = False
+
             daysBetweenUpdateChecks = string.atoi(valuesDict["daysBetweenUpdateChecks"])
             self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
             self.nextUpdateCheck = 0        # this will force an update check starting now
@@ -257,7 +283,10 @@ class Plugin(indigo.PluginBase):
             self.s = threading.Thread(target=eventServer, args=[self, '0.0.0.0', port])
             self.s.daemon = True
             self.s.start()
-            self.log.log(1, dbFlg, "Event comms server started", self.logName)
+            if self.s.isAlive():
+                self.log.log(2, dbFlg, "Event comms server started", self.logName)
+            else:
+                self.log.logError("Event comms server failed to start", self.logName)
 
         socket.setdefaulttimeout(self.apcupsdTimeout)
 
