@@ -17,12 +17,17 @@ import string
 import sys
 import threading
 import urllib
+import subprocess
 import indigo
 import time
 
 ################################################################################
 # Globals
 ################################################################################
+
+k_utilityBinaryName = "apcaccess"
+k_utilityBinaryPath = "/usr/local/sbin:/sbin"
+k_utilityCommand = "{binary} status {address} {port}".format
 
 def eventServer(self, host, port):
     funcName = inspect.stack()[0][3]
@@ -87,6 +92,20 @@ def findInPath(self, file_name, def_path=os.defpath):
 
 ################################################################################
          # delayAmount : 900
+########################################
+def doShell(self, cmd):
+        funcName = inspect.stack()[0][3]
+        dbFlg = False
+        self.log.log(2, dbFlg, "%s: Called" % (funcName), self.logName)
+        self.log.log(3, dbFlg, "%s: command to execute: %s" % (funcName, cmd), self.logName)
+
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        out, err = p.communicate()
+
+        self.log.log(3, dbFlg, "%s: returned output\n%s" % (funcName, out), self.logName)
+        self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
+        return (p.returncode, out)
+
             # description : plugin action
             # * deviceId : 145579207
             # pluginId : <ourPluginId>
@@ -151,8 +170,8 @@ class Plugin(indigo.PluginBase):
         self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
         self.nextUpdateCheck = 0  # this will force an update check as soon as the plugin is running
 
-        self.utilityBinaryName = "apcaccess"
-        utilityBinaryPath = "/usr/local/sbin:/sbin"
+        self.utilityBinaryName = k_utilityBinaryName
+        utilityBinaryPath = k_utilityBinaryPath
         if self.pluginPrefs.get("overridePath", False) and self.pluginPrefs.get("utilityPath", "") != "":
                 utilityBinaryPath = self.pluginPrefs["utilityPath"]
         self.utilityBinary = findInPath(self, self.utilityBinaryName, utilityBinaryPath)
@@ -314,10 +333,10 @@ class Plugin(indigo.PluginBase):
 
             apcupsdRetries = apcupsdRetries + 1
 
-            report = os.popen(self.utilityBinary + " status " + sAddress + " " + sPort).read()
-            result = os.popen(self.utilityBinary + " status " + sAddress + " " + sPort).close()
+            result, report = doShell(self, k_utilityCommand(binary=self.utilityBinary, address=sAddress, port=sPort))
             if result:
-                self.log.logError("%s: Connection to apcaccess failed with error code %s. Attempt %s of 5" % (funcName, result, apcupsdRetries), self.logName)
+                self.log.logError("%s: Connection to %s failed with error code %s. Attempt %s of 5" % (funcName, self.utilityBinary, result, apcupsdRetries), self.logName)
+                self.log.logError("%s: Returned output: %s" % (funcName, report), self.logName)
                 apcupsdSuccess = False
                 self.sleep(1)
             else:
@@ -586,9 +605,9 @@ class Plugin(indigo.PluginBase):
         elif action.pluginTypeId == 'logStatusReport':
             sAddress = indigo.devices[int(action.deviceId)].pluginProps["apcupsdAddress"]
             sPort = indigo.devices[int(action.deviceId)].pluginProps["apcupsdPort"]
-            self.log.log(4, dbFlg, "%s: doing apcaccess status for address %s on port %s" % (funcName, sAddress, sPort), self.logName)
+            self.log.log(4, dbFlg, "%s: doing '%s status' for address %s on port %s" % (funcName, self.utilityBinary, sAddress, sPort), self.logName)
 
-            report = os.popen(self.utilityBinary + " status " + sAddress + " " + sPort).read()
+            result, report = doShell(self, k_utilityCommand(binary=self.utilityBinary, address=sAddress, port=sPort))
             self.log.log(0, dbFlg, "\n\nFull APCUPSD Status report for %s:\n%s" % (indigo.devices[int(action.deviceId)].name, report), self.logName)
         elif apcupsdAction == 'commfailure':
             dev.setErrorStateOnServer(u'lost comm')
