@@ -519,7 +519,7 @@ class Plugin(indigo.PluginBase):
             self.log.logError("%s: Received bad event(1) %s for device %s" % (funcName, event, devid), self.logName)
             return
 
-        eventList = ['commfailure', 'commok', 'doreboot', 'doshutdown', 'emergency', 'endselftest', 'failing', 'loadlimit', 'mainsback', 'offbattery', 'onbattery', 'powerout', 'remotedown', 'runlimit', 'startselftest', 'timeout']
+        eventList = ['annoyme', 'battattach', 'battdetach', 'changeme', 'commfailure', 'commok', 'doreboot', 'doshutdown', 'emergency', 'endselftest', 'failing', 'killpower', 'loadlimit', 'mainsback', 'offbattery', 'onbattery', 'powerout', 'readApcupsd', 'remotedown', 'runlimit', 'startselftest', 'timeout']
         if event in eventList:
             self.log.log(3, dbFlg, "%s: Validated event %s for device %s" % (funcName, event, devid), self.logName)
         else:
