@@ -237,17 +237,6 @@ class Plugin(indigo.PluginBase):
 
         socket.setdefaulttimeout(self.apcupsdTimeout)
 
-        if self.secondsBetweenUpdateChecks > 0:
-                # obtain the current date/time and determine if it is after the previously-calculated
-                # next check run
-                timeNow = time.time()
-                if timeNow > self.nextUpdateCheck:
-                        self.pluginPrefs[u'updaterLastCheck'] = timeNow
-                        self.log.log(3, dbFlg, "# of seconds between update checks: %s" % (int(self.secondsBetweenUpdateChecks)), self.logName)
-                        self.nextUpdateCheck = timeNow + self.secondsBetweenUpdateChecks
-                        # use the updater to check for an update now
-                        self.checkForUpdates()
-
         try:
             self.log.log(1, dbFlg, "Plugin started. Polling apcupsd server(s) every %s minutes with a timeout of %s seconds" %  (self.apcupsdFrequency, int(self.apcupsdTimeout)), self.logName)
         except:
@@ -257,6 +246,17 @@ class Plugin(indigo.PluginBase):
         try:
             while True:
                 self.readLoop = True
+                if self.secondsBetweenUpdateChecks > 0:
+                        # obtain the current date/time and determine if it is after the previously-calculated
+                        # next check run
+                        timeNow = time.time()
+                        if timeNow > self.nextUpdateCheck:
+                                self.pluginPrefs[u'updaterLastCheck'] = timeNow
+                                self.log.log(3, dbFlg, "# of seconds between update checks: %s" % (int(self.secondsBetweenUpdateChecks)), self.logName)
+                                self.nextUpdateCheck = timeNow + self.secondsBetweenUpdateChecks
+                                # use the updater to check for an update now
+                                self.checkForUpdates()
+
                 devCount = 0
                 for dev in indigo.devices.iter(self.pluginId):
                     if dev.enabled:
