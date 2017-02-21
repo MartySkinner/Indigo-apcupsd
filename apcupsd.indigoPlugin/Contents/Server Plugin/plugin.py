@@ -38,7 +38,7 @@ def eventServer(self, host, port):
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server.bind((host, port))
             server.listen(5)
-    except Exception, e:
+    except Exception as e:
             e1 = sys.exc_info()[0]
             self.log.logError("%s: problem with socket: Errors %s & %s" % (funcName, e, e1), self.logName)
             return
@@ -64,7 +64,7 @@ def eventServer(self, host, port):
         except socket.timeout:
                 pass
 
-        except Exception, e:
+        except Exception as e:
                 e1 = sys.exc_info()[0]
                 self.log.logError("%s: read loop: Errors %s & %s" % (funcName, e, e1), self.logName)
                 pass
@@ -552,7 +552,7 @@ class Plugin(indigo.PluginBase):
                 if trigger.pluginTypeId == eventId and trigger.pluginProps['indigoDevice'] == device:
                     self.log.log(2, dbFlg, "%s: matched trigger ID %s" % (funcName, trigId), self.logName)
                     indigo.trigger.execute(trigger.id)
-        except Exception, e:
+        except Exception as e:
                 e1 = sys.exc_info()[0]
                 self.log.logError("%s: Errors %s and %s" % (funcName, e, e1), self.logName)
                 pass
