@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <PluginConfig>
 
-	<Field id="apcupsdFrequency" type="menu" defaultValue="5">
-		<Label>Frequency of updates (Minutes):</Label>
+	<Field id="apcupsdFrequency" type="menu" defaultValue="5" tooltip="Select how often queries are made to each enabled UPS device and thus how often state values are changed">
+		<Label>Frequency of device polling 
+		(minutes):</Label>
 		<List>
 			<Option value="1">1</Option>
 			<Option value="2">2</Option>
@@ -22,9 +23,53 @@
 			<Option value="60">60</Option>
 		</List>
 	</Field>
-	
-		<Field id="apcupsdTimeout" type="menu" defaultValue="8">
-		<Label>		Timeout for apcupsd 
+	<Field id="removeUnits" type="checkbox" defaultValue="true" tooltip="The default is 'checked'">
+		<Label>Remove 'units' from state values:</Label>
+	</Field>
+	<Field id="label3" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="removeUnits" visibleBindingValue="true">
+		<Label> 	'Units' are words such as Seconds, Hours, Watts, Percent, etc.</Label>
+	</Field>
+	<Field id="daysBetweenUpdateChecks" type="menu" defaultValue="1" tooltip="Select how often to check for updates to this software">
+		<Label>Frequency of software update checks 
+		(days):</Label>
+		<List>
+			<Option value="0">Disabled</Option>
+			<Option value="1">1</Option>
+			<Option value="2">2</Option>
+			<Option value="3">3</Option>
+			<Option value="4">4</Option>
+			<Option value="5">5</Option>
+			<Option value="6">6</Option>
+			<Option value="7">7</Option>
+			<Option value="14">14</Option>
+			<Option value="30">30</Option>
+		</List>
+	</Field>
+
+	<Field id="pcSep2" type="separator" />
+
+	<Field id="useIpConn" type="checkbox" defaultValue="false" tooltip="Check this if you plan to have apcupsd/apccontrol send UPS event notification to Indigo">
+		<Label> 	Use event server 
+		for external event notifications:</Label>
+	</Field>
+	<Field id="useIpConnPort" type="textfield" visibleBindingId="useIpConn" visibleBindingValue="true" tooltip="Specify a non-used port number on the Indigo server for the event server">
+		<Label>Local TCP Port:</Label>
+	</Field>
+
+	<Field id="label1" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
+		<Label>This port will be used for incoming event notifications.</Label>
+	</Field>
+
+	<Field id="useIpConnAccess" type="textfield" defaultValue="127.0.0.1" visibleBindingId="useIpConn" visibleBindingValue="true" tooltip="Specify which IP address(es) to allow incoming event notifications from">
+		<Label>Allow event notifications from:</Label>
+	</Field>
+
+	<Field id="label2" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
+		<Label>Enter a comma separated list of IP addresses.</Label>
+	</Field>
+
+	<Field id="apcupsdTimeout" type="menu" defaultValue="8" visibleBindingId="useIpConn" visibleBindingValue="true" tooltip="How long does the event server wait for event notifications before looping">
+		<Label>		Timeout for event notification
 		connection (seconds):</Label>
 		<List>
 			<Option value="1">1</Option>
@@ -46,65 +91,22 @@
 		</List>
 	</Field>
 
-	<Field id="removeUnits" type="checkbox" defaultValue="true" >
-		<Label>Remove 'units' from state values?:</Label>
-	</Field>
-	<Field id="label3" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="removeUnits" visibleBindingValue="true">
-		<Label> 	'Units' are words such as Seconds, Hours, Watts, Percent, etc.</Label>
-	</Field>
-	<Field id="daysBetweenUpdateChecks" type="menu" defaultValue="1" >
-		<Label>Days between software update checks?:</Label>
-		<List>
-			<Option value="0">Disabled</Option>
-			<Option value="1">1</Option>
-			<Option value="2">2</Option>
-			<Option value="3">3</Option>
-			<Option value="4">4</Option>
-			<Option value="5">5</Option>
-			<Option value="6">6</Option>
-			<Option value="7">7</Option>
-			<Option value="14">14</Option>
-			<Option value="30">30</Option>
-		</List>
-	</Field>
-
-	<Field id="pcSep2" type="separator" />
-
-	<Field id="useIpConn" type="checkbox" defaultValue="false" >
-		<Label>Use IP Socket for events?:</Label>
-	</Field>
-	<Field id="useIpConnPort" type="textfield" visibleBindingId="useIpConn" visibleBindingValue="true">
-		<Label>Local TCP Port:</Label>
-	</Field>
-
-	<Field id="label1" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
-		<Label>Ths port will be used for incoming event connections.</Label>
-	</Field>
-
-	<Field id="useIpConnAccess" type="textfield" defaultValue="127.0.0.1" visibleBindingId="useIpConn" visibleBindingValue="true">
-		<Label>Allow connections from:</Label>
-	</Field>
-
-	<Field id="label2" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="useIpConn" visibleBindingValue="true">
-		<Label>Enter a comma separated list of IP addresses.</Label>
-	</Field>
-
 	<Field id="pcSep1" type="separator" />
 
-	<Field id="overridePath" type="checkbox" defaultValue="false">
+	<Field id="overridePath" type="checkbox" defaultValue="false" tooltip="Check only if the apcaccess utility is not in the default search path of /sbin:/usr/local/sbin">
 		<Label>Override apcaccess utility path:</Label>
 		<Description>(Not Recommended)</Description>
 	</Field>
 	<Field id="utilityPath" type="textfield" visibleBindingId="overridePath" visibleBindingValue="true">
 		<Label>Enter path(s):</Label>
 	</Field>
-	<Field id="utilityPathL" type="label" visibleBindingId="overridePath" visibleBindingValue="true">
-		<Label>		If you enter more than one path, separate them with a colon (:)</Label>
+	<Field id="utilityPathL" type="label" alignText="right" fontSize="small" fontColor="darkgray" alignWithControl="true" visibleBindingId="overridePath" visibleBindingValue="true">
+		<Label>		If you enter more than one path, separate them with a colon (:).</Label>
 	</Field>
 	<Field id="pcSep1b" type="separator" />
 
-	<Field id="showDebugInfo1" type="menu" defaultValue="1">
-		<Label>Logging level</Label>
+	<Field id="showDebugInfo1" type="menu" defaultValue="1" tooltip="Select the level of output to the Indigo log">
+		<Label>Logging level:</Label>
 		<List>
 			<Option value="0">(0) None</Option>
 			<Option value="1">(1) Normal</Option>
@@ -116,7 +118,7 @@
 	
 	<Field id="v0" type="label" visibleBindingId="showDebugInfo1" visibleBindingValue="0">
 		<Label>		No logging at all 
-	(not suggested)</Label>
+	(not recommended)</Label>
 	</Field>
 	<Field id="v1" type="label" visibleBindingId="showDebugInfo1" visibleBindingValue="1">
 		<Label>		Normal operating events</Label>
@@ -126,8 +128,10 @@
 	</Field>
 	<Field id="v3" type="label" visibleBindingId="showDebugInfo1" visibleBindingValue="3,4">
 		<Label>		If you are having problems with the plugin (or you are
-		instructed by support), you can enable debugging Use with 
-		caution. This level is not suggested for regular operation.</Label>
+		instructed by support), you can enable more detailed debugging.
+		Use with caution.
+		
+		This level is not suggested for regular operation.</Label>
 	</Field>
 	
 </PluginConfig>

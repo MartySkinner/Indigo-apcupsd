@@ -6,53 +6,53 @@
 		<ConfigUI>
 			<SupportURL>http://www.apcupsd.org/manual/manual.html#status-report-fields</SupportURL>
 
-			<Field id="apcupsdAddressType" type="menu" defaultValue="localhost">
-				<Label>IP Address</Label>
+			<Field id="apcupsdAddressType" type="menu" defaultValue="localhost" tooltip="Choose 'local host' if the UPS is attached to the Indigo server, otherwise choose 'Will Specify'">
+				<Label>IP Address:</Label>
 				<List>
 					<Option value="localhost">local host</Option>
 					<Option value="specify">Will Specify</Option>
 				</List>
 			</Field>
 
-			<Field id="apcupsdAddress" type="textfield" visibleBindingId="apcupsdAddressType" visibleBindingValue="specify">
+			<Field id="apcupsdAddress" type="textfield" visibleBindingId="apcupsdAddressType" visibleBindingValue="specify" tooltip="IP address of server with a monitored UPS">
 				<Label>IP Address or domain name:</Label>
 			</Field>
-			<Field id="apcupsdPort" type="textfield" defaultValue="3551">
+			<Field id="apcupsdPort" type="textfield" defaultValue="3551" tooltip="Port number on server for its UPS reports (usually 3551)">
 				<Label>Port number:</Label>
 			</Field>
 
 			<Field id="simpleSeparator2" type="separator" />
 
 			<Field id="label1" type="label" alignText="center">
-				<Label>Select the UPS Report fields to use for states in this device</Label>
+				<Label>Select the UPS report fields to use for states in this device.</Label>
 			</Field>
 
 			<Field id="label2" type="label" fontSize="small"  fontColor="darkgray" alignText="center">
-				<Label>Note: Not every state is available for every UPS</Label>
+				<Label>Note: Not every state is available for every UPS.</Label>
 			</Field>
 
-			<Field id="configButton2" type="button" >
+			<Field id="configButton1" type="button" tooltip="This will set only states that this UPS provides">
+				<Label/>
+				<Title>Query UPS for states</Title>
+				<CallbackMethod>selectQueryDevice</CallbackMethod>
+			</Field>
+
+			<Field id="configButton2" type="button" tooltip="Used to quickly set all state checkboxes">
 				<Label/>
 				<Title>Select all states</Title>
 				<CallbackMethod>selectAllStates</CallbackMethod>
 			</Field>
 
-			<Field id="configButton3" type="button" >
+			<Field id="configButton3" type="button" tooltip="Used to quickly clear all state checkboxes">
 				<Label/>
 				<Title>Deselect all states</Title>
 				<CallbackMethod>deSelectAllStates</CallbackMethod>
 			</Field>
 
-			<Field id="configButton4" type="button" >
+			<Field id="configButton4" type="button" tooltip="Used to set state checkboxes based upon plugin (not UPS device) defaults">
 				<Label/>
 				<Title>Reset default states</Title>
 				<CallbackMethod>selectDefaultStates</CallbackMethod>
-			</Field>
-
-			<Field id="configButton5" type="button" >
-				<Label/>
-				<Title>Query UPS for states</Title>
-				<CallbackMethod>selectQueryDevice</CallbackMethod>
 			</Field>
 
 <!--
@@ -220,7 +220,7 @@
 			<Field id="apcupsdStateSTARTTIME" type="checkbox" defaultValue="false" tooltip="Date and time apcupsd was started">
 				<Label>starttime</Label>
 			</Field>
-			<Field id="apcupsdStateSTATFLAG" type="checkbox" defaultValue="false" tooltip="PS status flag in hex">
+			<Field id="apcupsdStateSTATFLAG" type="checkbox" defaultValue="false" tooltip="UPS status flag in hex">
 				<Label>statflag</Label>
 			</Field>
 			<Field id="apcupsdStateSTESTI" type="checkbox" defaultValue="false" tooltip="Self-test interval">
@@ -248,8 +248,8 @@
 				<Label>xoffbatt</Label>
 			</Field>
 
-			<Field id="apcupsdDevceStateDisplay" type="textfield" defaultValue='status'>
-				<Label>State to use for State Column</Label >
+			<Field id="apcupsdDevceStateDisplay" type="textfield" defaultValue='status' tooltip="Enter the report field name (from above list) that will be this device's overall state (default is status field)">
+				<Label>State to use for State Column:</Label >
 			</Field>
 
 		</ConfigUI>
