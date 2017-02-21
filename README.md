@@ -16,8 +16,8 @@ If you are running a previous version lower than 0.5.0 you will need to take a f
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Disable__ menu option to disable the older plugin.
 1. [Download the updated plugin](../../releases).
 1. In the __Finder__:
-  * If the download doesn't automatically expand, double-click on the newly downloaded __.zip__ file (__apcupsd.IndigoPlugin.zip__).
-  * Double-click on __apcupsd.IndigoPlugin__.
+  * If the download doesn't automatically expand, double-click on the newly downloaded __.zip__ file (__apcupsd.indigoPlugin.zip__).
+  * Double-click on __apcupsd.indigoPlugin__.
 1. Follow the Indigo prompts for upgrading and enabling the plugin.
 1. That should re-enable the plugin but if not, select the __Plugins &mdash;> apcupsd &mdash;> Enable__ menu option.
 1. Setup the overall plugin settings (see [Plugin Configuration](#plugin-configuration) below).
@@ -124,12 +124,11 @@ Because Indigo 5 uses an older of Python for its plugin execution, some minor co
 
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Disable__ menu option.
 1. On the Indigo server system, open a Terminal (__/Applications/Utilities/Terminal__) session and issue these commands one at a time (please use Cut from this document and Paste each line into the Terminal window):
-    <code>
-    
+ <code>
     	cd /Library/Application\ Support/Perceptive\ Automation/Indigo\ 5/Plugins\ \(Disabled\)/apcupsd.indigoPlugin/Contents/Server\ Plugin/
     	
     	sed -e "s/\(.*except .*\)\( as \)\(.*:\)$/\1, \3/" -i .2.6 *.py
-    </code>
+</code>
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Enable__ menu option.
 1. Proceed with setting up the [Plugin Configuration](#plugin-configuration) and the [Device Configuration](#device-configuration) for your UPSes.
 
