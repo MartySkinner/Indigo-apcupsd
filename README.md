@@ -80,7 +80,7 @@ To enable the event server in the __Plugins &mdash;> apcupsd &mdash;> Configure.
 
 The screenshot in the [Plugin Configuration](#plugin-configuration) section shows this feature enabled.
 
-To send these external events to the plugin's event server, you need to edit the desired event handler files in __/etc/apcupsd/*filename*__. The following handlers (*filename* __must__ match these names) are supported (create them if they do not exist and you want to receive that event in Indigo):
+To send these external events to the plugin's event server, you need to edit the desired event handler files in __/etc/apcupsd/__*filename*. The following handlers (*filename* __must__ match these names) are supported (create them if they do not exist and you want to receive that event in Indigo):
 
 * annoyme
 * battattach
@@ -125,10 +125,9 @@ Because Indigo 5 uses an older of Python for its plugin execution, some minor co
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Disable__ menu option.
 1. On the Indigo server system, open a Terminal (__/Applications/Utilities/Terminal__) window and issue these commands one at a time (please use Cut from this document and Paste each line into the Terminal window):
 
-    cd /Library/Application\ Support/Perceptive\ Automation/Indigo\ 5/Plugins\ \(Disabled\)/apcupsd.indigoPlugin/Contents/Server\ Plugin/
-    
-    sed -e "s/\(.*except .*\)\( as \)\(.*:\)$/\1, \3/" -i .2.6 *.py
+    `cd /Library/Application\ Support/Perceptive\ Automation/Indigo\ 5/Plugins\ \(Disabled\)/apcupsd.indigoPlugin/Contents/Server\ Plugin/`
 
+    `sed -e "s/\(.*except .*\)\( as \)\(.*:\)$/\1, \3/" -i .2.6 *.py`
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Enable__ menu option.
 1. Proceed with setting up the [Plugin Configuration](#plugin-configuration) and the [Device Configuration](#device-configuration) for your UPSes.
 
