@@ -122,8 +122,6 @@ If you are comfortable with the command line interface of your Mac, you may wish
 
 Because Indigo 5 uses an older of Python for its plugin execution, some minor code changes must be made to the plugin distribution to work with that older version of Python. __These changes must be made any time the plugin is updated on your Indigo 5 system.__ Without making these code changes the plugin __will not__ function properly and will log errors to the Indigo log on an on-going basis.
 
-    testing
-
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Disable__ menu option.
 1. On the Indigo server system, open a Terminal (__/Applications/Utilities/Terminal__) window and issue these commands one at a time (please use Cut from this document and Paste each line into the Terminal window):
 
