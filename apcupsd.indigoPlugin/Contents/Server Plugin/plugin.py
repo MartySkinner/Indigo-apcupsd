@@ -4,6 +4,8 @@
 # Copyright (c) 2013, Richard Perlman All rights reserved.
 # with much credit to Rob Smith (kormoc) -- https://github.com/BrightcoveOS/Diamond/blob/master/src/collectors/apcupsd/apcupsd.py
 #
+# Starting with 0.5.0, revised by Marty Skinner (https://github.com/MartySkinner/Indigo-apcupsd)
+#
 
 ################################################################################
 # Imports
@@ -26,6 +28,20 @@ import subprocess
 k_utilityBinaryName = "apcaccess"
 k_utilityBinaryPath = "/usr/local/sbin:/sbin"
 k_utilityCommand = "{binary} status {address} {port}".format
+
+def startEventServer(self, port):
+    dbFlg = False
+    socket.setdefaulttimeout(self.apcupsdTimeout)
+    self.s = threading.Thread(target=eventServer, args=[self, '0.0.0.0', port])
+    self.s.daemon = True
+    self.s.start()
+    self.sleep(5)
+    if self.s.isAlive():
+        self.log.log(2, dbFlg, "Event notification server started", self.logName)
+        return True
+    else:
+        self.log.logError("Event notification server failed to start", self.logName)
+        return False
 
 def eventServer(self, host, port):
     funcName = inspect.stack()[0][3]
@@ -205,36 +221,28 @@ class Plugin(indigo.PluginBase):
 
         if UserCancelled is False:
             self.log = logger(self)
-            self.apcupsdTimeout = string.atof(valuesDict["apcupsdTimeout"])
-            socket.setdefaulttimeout(self.apcupsdTimeout)
             self.apcupsdFrequency = string.atof(valuesDict["apcupsdFrequency"])
             lastUseIpConn = self.useIpConn
             self.useIpConn = valuesDict["useIpConn"]
             if self.useIpConn:
+                self.apcupsdTimeout = string.atof(valuesDict["apcupsdTimeout"])
                 self.useIpConnAccess = valuesDict["useIpConnAccess"].split(', ')
                 self.log.log(2, dbFlg, "%s: read access list: %s" % (funcName, self.useIpConnAccess), self.logName)
                 if lastUseIpConn:
-                        self.log.log(2, dbFlg, "Event comms server asked to stop", self.logName)
+                        self.log.log(2, dbFlg, "Event notifications server asked to stop", self.logName)
                         # because we may have new preferences to put into play, ask any currently running server to stop what its doing
                         self.serverRun = False
-                        self.s.join(20)
+                        self.s.join(10)
                         cnt = 0
-                        while cnt < 10 and self.s.isAlive():
+                        while cnt < 20 and self.s.isAlive():
                                 self.sleep(1)
                                 cnt = cnt + 1
-                        self.log.log(3, dbFlg, "%s: Event comms server needed %s delays to stop" % (funcName, cnt), self.logName)
+                        self.log.log(3, dbFlg, "%s: Event notifications server needed %s delays to stop" % (funcName, cnt), self.logName)
                 self.serverRun = True
                 port = int(valuesDict["useIpConnPort"])
-                self.s = threading.Thread(target=eventServer, args=[self, '0.0.0.0', port])
-                self.s.daemon = True
-                self.s.start()
-                self.sleep(5)
-                if self.s.isAlive():
-                        self.log.log(2, dbFlg, "Event comms server started", self.logName)
-                else:
-                        self.log.logError("Event comms server failed to start", self.logName)
+                startEventServer(self, port)
             else:
-                self.log.log(2, dbFlg, "Event comms server asked to stop", self.logName)
+                self.log.log(2, dbFlg, "Event notifications server asked to stop", self.logName)
                 # since we don't need a server now, ask any currently running server to stop what its doing
                 self.serverRun = False
 
@@ -249,7 +257,7 @@ class Plugin(indigo.PluginBase):
                 if self.utilityBinaryName != utilityBinary:
                         self.utilityBinaryPath = utilityBinary
 
-            self.log.log(1, dbFlg, "Plugin options reset. Polling apcupsd servers every %s minutes with a %s second timeout and a debug level of %i" % (self.apcupsdFrequency, int(self.apcupsdTimeout), int(valuesDict["showDebugInfo1"])), self.logName)
+            self.log.log(1, dbFlg, "Plugin options reset. Polling apcupsd servers every %s minutes and a debug level of %i" % (self.apcupsdFrequency, int(valuesDict["showDebugInfo1"])), self.logName)
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
 
     ########################################
@@ -277,18 +285,10 @@ class Plugin(indigo.PluginBase):
 
         if self.useIpConn:
             port = int(self.pluginPrefs["useIpConnPort"])
-            self.s = threading.Thread(target=eventServer, args=[self, '0.0.0.0', port])
-            self.s.daemon = True
-            self.s.start()
-            if self.s.isAlive():
-                self.log.log(2, dbFlg, "Event comms server started", self.logName)
-            else:
-                self.log.logError("Event comms server failed to start", self.logName)
-
-        socket.setdefaulttimeout(self.apcupsdTimeout)
+            startEventServer(self, port)
 
         try:
-            self.log.log(1, dbFlg, "Plugin started. Polling apcupsd server(s) every %s minutes with a timeout of %s seconds" %  (self.apcupsdFrequency, int(self.apcupsdTimeout)), self.logName)
+            self.log.log(1, dbFlg, "Plugin started. Polling apcupsd server(s) every %s minutes" %  (self.apcupsdFrequency), self.logName)
         except:
             self.log.logError("Plugin start delayed pending completion of initial plugin configuration", self.logName)
             return
