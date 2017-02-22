@@ -124,10 +124,11 @@ Because Indigo 5 uses an older of Python for its plugin execution, some minor co
 
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Disable__ menu option.
 1. On the Indigo server system, open a Terminal (__/Applications/Utilities/Terminal__) window and issue these commands one at a time (please use Cut from this document and Paste each line into the Terminal window):
+```
+    cd /Library/Application\ Support/Perceptive\ Automation/Indigo\ 5/Plugins\ \(Disabled\)/apcupsd.indigoPlugin/Contents/Server\ Plugin/
 
-    `cd /Library/Application\ Support/Perceptive\ Automation/Indigo\ 5/Plugins\ \(Disabled\)/apcupsd.indigoPlugin/Contents/Server\ Plugin/`
-
-    `sed -e "s/\(.*except .*\)\( as \)\(.*:\)$/\1, \3/" -i .2.6 *.py`
+    sed -e "s/\(.*except .*\)\( as \)\(.*:\)$/\1, \3/" -i .2.6 *.py
+```
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Enable__ menu option.
 1. Proceed with setting up the [Plugin Configuration](#plugin-configuration) and the [Device Configuration](#device-configuration) for your UPSes.
 
