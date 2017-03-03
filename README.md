@@ -14,22 +14,30 @@ If you are running a previous version lower than 0.5.0 you will need to take a f
 
 1. Run the Indigo client on the Indigo server system.
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Disable__ menu option to disable the older plugin.
+1. Stop the Indigo Server, and any Indigo clients.
 1. [Download the updated plugin](../../releases).
 1. In the __Finder__:
-  * If the download doesn't automatically expand, double-click on the newly downloaded __.zip__ file (__apcupsd.indigoPlugin.zip__).
+  * Select the __Go &mdash;> Go to Folder...__ menu option and enter the following path:
+```     /Library/Application Support/Perceptive Automation/Indigo 7/Plugins (Disabled)
+```
+(change Indigo 7 to Indigo 6 or Indigo 5 to match your version of Indigo)
+  * Drag the apcupsd.indigoPlugin from that folder to your Desktop.
+  * Return back to the folder you downloaded the new version of the plugin.
+  * If the new plugin download didn't automatically expand, double-click on the newly downloaded __.zip__ file (__apcupsd.indigoPlugin.zip__).
   * Double-click on __apcupsd.indigoPlugin__.
-1. Follow the Indigo prompts for upgrading and enabling the plugin.
-1. That should re-enable the plugin but if not, select the __Plugins &mdash;> apcupsd &mdash;> Enable__ menu option.
+1. Follow the Indigo prompts for installing and enabling the plugin.
+1. That should enable the plugin but if not, select the __Plugins &mdash;> apcupsd &mdash;> Enable__ menu option.
 1. Setup the overall plugin settings (see [Plugin Configuration](#plugin-configuration) below).
-1. Reconnect Indigo UPS devices to the new plugin. For each such device in the Indigo client DEVICES listing:
-  * Double-click the device name.
-  * The __Plugin:__ selector should be empty. Choose __apcupsd__ from the popup list.
+1. Click the __Save__ button.
+1. Reconnect existing Indigo UPS devices to the new plugin. For each such device in the Indigo client DEVICES listing:
+  * Double-click the matching device name.
+  * The __Type:__ (or __Plugin:__ in Indigo 5) selector should be empty. Choose __apcupsd__ from the popup list.
   * Set the __Model:__ as __apcupsd UPS__.
   * Click the __Edit Device Settings...__ button.
   * Optional: click the __Query UPS for states__ button to match up the monitored states to the UPS.
   * Review the enabled state names.
   * Even if you didn't change anything, click Save on the __Configure apcupsd UPS__ dialog.
-  * Click OK on the __Edit Device__ dialog.
+  * In Indigo 5, click OK on the __Edit Device__ dialog.
 
 This should refresh your Indigo UPS device states, while retaining associated triggers, state condition tests, etc. Should these steps not work you will need to delete the UPS device(s) and recreate them.
 
