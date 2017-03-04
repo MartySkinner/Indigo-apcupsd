@@ -18,9 +18,8 @@ If you are running a previous version lower than 0.5.0 you will need to take a f
 1. [Download the updated plugin](../../releases).
 1. In the __Finder__:
   * Select the __Go &mdash;> Go to Folder...__ menu option and enter the following path:
-```     /Library/Application Support/Perceptive Automation/Indigo 7/Plugins (Disabled)
-```
-(change Indigo 7 to Indigo 6 or Indigo 5 to match your version of Indigo)
+```/Library/Application Support/Perceptive Automation/Indigo 7/Plugins (Disabled)
+``` (change Indigo 7 to Indigo 6 or Indigo 5 to match your version of Indigo)
   * Drag the apcupsd.indigoPlugin from that folder to your Desktop.
   * Return back to the folder you downloaded the new version of the plugin.
   * If the new plugin download didn't automatically expand, double-click on the newly downloaded __.zip__ file (__apcupsd.indigoPlugin.zip__).
