@@ -29,6 +29,9 @@ k_utilityBinaryName = "apcaccess"
 k_utilityBinaryPath = "/usr/local/sbin:/sbin"
 k_utilityCommand = "{binary} status {address} {port}".format
 
+k_eventServerListenBacklog = 5
+k_eventServerMsgMaxLength = 128 + 16 + 1 # device name + event name + separator
+
 k_localhostName = u"localhost"
 k_localhostAddress = "127.0.0.1"
 
@@ -52,14 +55,14 @@ def eventServer(self, host, port):
     self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
     self.log.log(3, dbFlg, "%s: received address: %s and port: %s" % (funcName, host, port), self.logName)
 
-    size = 24
     try:
             server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             server.bind((host, port))
-            server.listen(5)
+            server.listen(k_eventServerListenBacklog)
     except Exception as e:
             e1 = sys.exc_info()[0]
-            self.log.logError("%s: problem with socket: Errors %s & %s" % (funcName, e, e1), self.logName)
+            self.log.logError("%s: problem with socket: %s & %s" % (funcName, e, e1), self.logName)
             return
 
     self.log.log(2, dbFlg, "%s: started listening on %s" % (funcName, server.getsockname()), self.logName)
@@ -69,14 +72,13 @@ def eventServer(self, host, port):
             self.log.log(4, dbFlg, "%s: waiting for a connection" % (funcName), self.logName)
             client, client_address = server.accept()
 
-            self.log.log(3, dbFlg, "%s: client connected from, address: %s port: %s" % (funcName, client_address[0], client_address[1]), self.logName)
+            self.log.log(3, dbFlg, "%s: client connected from address: %s port: %s" % (funcName, client_address[0], client_address[1]), self.logName)
 
             if client_address[0] in self.useIpConnAccess:
-                data = client.recv(size)
+                data = client.recv(k_eventServerMsgMaxLength)
                 if  data:
                     self.log.log(3, dbFlg, "%s: received %s" % (funcName, data), self.logName)
                     self.buildAction(data)
-                client.close()
             else:
                 self.log.logError("%s: unauthorized client attempted access from: address: %s port: %s" % (funcName, client_address[0], client_address[1]), self.logName)
 
@@ -88,10 +90,9 @@ def eventServer(self, host, port):
                 self.log.logError("%s: read loop: Errors %s & %s" % (funcName, e, e1), self.logName)
                 pass
 
-        self.sleep(1)
+        client.close()
 
-    client.close()
-    self.log.log(2, dbFlg, "%s server closed" % (funcName), self.logName)
+    self.log.log(2, dbFlg, "%s: Event notification server closed" % (funcName), self.logName)
 
 ########################################
 def findInPath(self, file_name, def_path=os.defpath):
