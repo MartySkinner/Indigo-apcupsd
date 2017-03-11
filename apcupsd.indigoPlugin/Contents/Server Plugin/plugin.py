@@ -161,7 +161,7 @@ class Plugin(indigo.PluginBase):
 
         try:
             self.apcupsdTimeout = string.atof(self.pluginPrefs["apcupsdTimeout"])
-        except:
+        except KeyError:
             self.apcupsdTimeout = 8
             self.log.logError("The apcupsd plugin appears to have not been configured. Default values will be used until the configuration is changed.", self.logName)
 
