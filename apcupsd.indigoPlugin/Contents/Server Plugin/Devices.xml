@@ -248,7 +248,7 @@
 				<Label>xoffbatt</Label>
 			</Field>
 
-			<Field id="apcupsdDevceStateDisplay" type="textfield" defaultValue='status' tooltip="Enter the report field name (from above list) that will be this device's overall state (default is status field)">
+			<Field id="apcupsdDeviceStateDisplay" type="textfield" defaultValue='status' tooltip="Enter the report field name (from above list) that will be this device's overall state (default is status field)">
 				<Label>State to use for State Column:</Label >
 			</Field>
 

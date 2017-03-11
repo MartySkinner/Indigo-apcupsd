@@ -450,7 +450,18 @@ class Plugin(indigo.PluginBase):
     def deviceStartComm(self, dev):
         funcName = inspect.stack()[0][3]
         dbFlg = False
-        self.log.log(2, dbFlg, "%s called for devce %s" % (funcName, dev.name), self.logName)
+        self.log.log(2, dbFlg, "%s called for device %s" % (funcName, dev.name), self.logName)
+
+        # check to see if we have the older, misspelled property and change to the correct one if we do
+        tmpProps = dev.pluginProps
+        try:
+            tmp = tmpProps['apcupsdDevceStateDisplay']
+            self.log.log(1, dbFlg, "%s: Changing to new property name with a value of '%s'" % (funcName, tmp), self.logName)
+            tmpProps['apcupsdDeviceStateDisplay'] = tmp
+            del tmpProps['apcupsdDevceStateDisplay']
+            dev.replacePluginPropsOnServer(tmpProps)
+        except KeyError:
+            pass
 
         if dev.enabled and not self.startingUp:
             self.log.log(2, dbFlg, "%s: Resetting read loop to include device %s" % (funcName, dev.name), self.logName)
@@ -462,7 +473,7 @@ class Plugin(indigo.PluginBase):
     def deviceStopComm(self, dev):
         funcName = inspect.stack()[0][3]
         dbFlg = False
-        self.log.log(2, dbFlg, "%s called for devce %s" % (funcName, dev.name), self.logName)
+        self.log.log(2, dbFlg, "%s called for device %s" % (funcName, dev.name), self.logName)
 
         self.log.log(2, dbFlg, "%s: Resetting read loop to drop device %s" % (funcName, dev.name), self.logName)
         self.readLoop = False
@@ -473,7 +484,7 @@ class Plugin(indigo.PluginBase):
     def didDeviceCommPropertyChange(self, origDev, newDev):
         funcName = inspect.stack()[0][3]
         dbFlg = False
-        self.log.log(2, dbFlg, "%s called for devce %s" % (funcName, origDev.name), self.logName)
+        self.log.log(2, dbFlg, "%s called for device %s" % (funcName, origDev.name), self.logName)
 
         self.log.log(4, dbFlg, "%s: origDev:\n%s\n\nnewDev:\n%s\n" % (funcName, origDev, newDev), self.logName)
 
@@ -488,7 +499,7 @@ class Plugin(indigo.PluginBase):
     def deviceDeleted(self, dev):
         funcName = inspect.stack()[0][3]
         dbFlg = False
-        self.log.log(2, dbFlg, "%s called for devce %s" % (funcName, dev.name), self.logName)
+        self.log.log(2, dbFlg, "%s called for device %s" % (funcName, dev.name), self.logName)
         self.log.log(2, dbFlg, "%s: Resetting read loop to drop device %s" % (funcName, dev.name), self.logName)
         self.readLoop = False
 
@@ -792,7 +803,10 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s: received device: \n%s\n" % (funcName, dev), self.logName)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
-        return dev.pluginProps['apcupsdDevceStateDisplay']
+        try:
+            return dev.pluginProps['apcupsdDeviceStateDisplay']
+        except KeyError:
+            return None
 
    ########################################
     def getDeviceStateList(self, dev):
