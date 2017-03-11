@@ -18,8 +18,9 @@ If you are running a previous version of the plugin lower than 0.5.0 you will ne
 1. [Download the updated plugin](../../releases).
 1. In the __Finder__:
   * Select the __Go &mdash;> Go to Folder...__ menu option and enter the following path:
-```/Library/Application Support/Perceptive Automation/Indigo 7/Plugins (Disabled)
-``` (change Indigo 7 to Indigo 6 or Indigo 5 to match your version of Indigo)
+
+            /Library/Application Support/Perceptive Automation/Indigo 7/Plugins (Disabled)
+    (change Indigo 7 to Indigo 6 or Indigo 5 to match your version of Indigo)
   * Drag the apcupsd.indigoPlugin from that folder to your Desktop.
   * Return back to the folder you downloaded the new version of the plugin.
   * If the new plugin download didn't automatically expand, double-click on the newly downloaded __.zip__ file (__apcupsd.indigoPlugin.zip__).
@@ -64,10 +65,11 @@ When creating an APCUPSD plugin device, you:
 * Provide a name for your device. If you are planning on using the event notification server feature of the plugin your device name needs to be no longer than 128 characters.
 * For Indigo 6 and higher: set the __Type:__ selector to be __apcupsd__ from the popup list.
 * For Indigo 5: set the __Type:__ selector to be __Plugin__ and set the __Plugin:__ to be __apcupsd__ from the popup list.
-* Set the Model: as __apcupsd UPS__.
+* Set the __Model:__ to be __apcupsd UPS__ from the popup list.
+
 ![Device Creation](doc-images/device_create.png)
 
-On the resulting __Configure apcupsd UPS__ dialog:
+On the resulting __Configure apcupsd UPS__ dialog (you may need to scroll to see all the settings):
 
 * Provide an IP address. If you have the apcupsd software package running on the same machine as your Indigo server, select the default **local host**. Otherwise select **Will Specify** and enter the remote IP address in the textfield that appears.
 * Enter the port number. The default of 3551 should be correct for most installations. The port number is established by the external apcupsd package installation.
