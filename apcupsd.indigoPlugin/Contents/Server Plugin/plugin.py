@@ -29,6 +29,9 @@ k_utilityBinaryName = "apcaccess"
 k_utilityBinaryPath = "/usr/local/sbin:/sbin"
 k_utilityCommand = "{binary} status {address} {port}".format
 
+k_localhostName = u"localhost"
+k_localhostAddress = "127.0.0.1"
+
 def startEventServer(self, port):
     dbFlg = False
     socket.setdefaulttimeout(self.apcupsdTimeout)
@@ -164,7 +167,7 @@ class Plugin(indigo.PluginBase):
         self.apcupsdFrequency = string.atof(self.pluginPrefs.get("apcupsdFrequency", 5))
         self.useIpConn = self.pluginPrefs.get("useIpConn", False)
         if self.useIpConn:
-            self.useIpConnAccess = self.pluginPrefs.get("useIpConnAccess", '127.0.0.1').split(', ')
+            self.useIpConnAccess = self.pluginPrefs.get("useIpConnAccess", k_localhostAddress).split(', ')
             self.log.log(2, dbFlg, "%s: read access list: %s" % (funcName, self.useIpConnAccess), self.logName)
 
         self.pluginid = pluginid
@@ -845,9 +848,9 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
         self.log.log(3, dbFlg, "%s: received:\n>>valuesDict\n%s\n>>typeId\n%s\n>>devId\n%s\n" % (funcName, valuesDict, typeId, devId), self.logName)
 
-        if valuesDict[u'apcupsdAddressType'] == 'localhost':
-            valuesDict[u'apcupsdAddress'] = '127.0.0.1'
-        self.log.log(3, dbFlg, "%s:  returned:%s" % (funcName, valuesDict), self.logName)
+        if valuesDict['apcupsdAddressType'] == k_localhostName or valuesDict['apcupsdAddress'] == '':
+            valuesDict['apcupsdAddress'] = k_localhostAddress
+        self.log.log(4, dbFlg, "%s: returned:\n>>valuesDict\n%s\n" % (funcName, valuesDict), self.logName)
 
         self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
         return (True, valuesDict)

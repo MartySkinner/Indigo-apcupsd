@@ -14,7 +14,7 @@
 				</List>
 			</Field>
 
-			<Field id="apcupsdAddress" type="textfield" visibleBindingId="apcupsdAddressType" visibleBindingValue="specify" tooltip="IP address of server with a monitored UPS">
+			<Field id="apcupsdAddress" type="textfield" defaultValue="127.0.0.1" visibleBindingId="apcupsdAddressType" visibleBindingValue="specify" tooltip="IP address of server with a monitored UPS">
 				<Label>IP Address or domain name:</Label>
 			</Field>
 			<Field id="apcupsdPort" type="textfield" defaultValue="3551" tooltip="Port number on server for its UPS reports (usually 3551)">
