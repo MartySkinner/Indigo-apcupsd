@@ -786,7 +786,14 @@ class Plugin(indigo.PluginBase):
            if key.find('apcupsdState') != -1:
                 valuesDict[key] = False
 
-        (returnStatus, metrics) = self.readApcupsd(indigo.devices[int(devId)], True)
+        tmpProps = indigo.Dict()
+        tmpProps['apcupsdAddress'] = valuesDict['apcupsdAddress']
+        if valuesDict['apcupsdAddressType'] == k_localhostName or tmpProps['apcupsdAddress'] == "":
+                tmpProps['apcupsdAddress'] = k_localhostAddress
+        tmpProps['apcupsdPort'] = valuesDict['apcupsdPort']
+        self.log.log(4, dbFlg, "%s: temporary properties for new device\n%s\n" % (funcName, tmpProps), self.logName)
+
+        (returnStatus, metrics) = self.readApcupsd(0, True, tmpProps)
         if returnStatus == True:
                 self.log.log(4, dbFlg, "%s: returned\n>>device values\n%s\n" % (funcName, metrics), self.logName)
                 for metric in metrics:
