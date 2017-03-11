@@ -1,16 +1,16 @@
-# acpupsd Plugin
+# APCUPSD Plugin
+
+This is a software plugin for the [Indigo Home Automation Server](http://www.indigodomo.com). The plugin allows access to the current state information for many models of [APC](http://www.apc.com) UPSes that can be physically attached to a computer via USB or a special networking cable.
 
 > Because of the volatile nature of individual components within GitHub repositories such as this one, [__please only download actual releases__](../../releases). Any other downloads may result in an incomplete plugin, repeated errors in the Indigo log and/or incorrect behavior of the plugin.
 
-> Note: This plugin **requires** the separate apcupsd software package (<http://www.apcupsd.org>) to be installed and running on whatever machine your APC UPS is connected to.
+> Note: This plugin **requires** a separate apcupsd software package (<http://www.apcupsd.org>) to be installed and running on whatever computer your APC UPS is physically connected to (not limited to Macs). While this separate package offers lots of configuration options, its default installation usually results in a perfectly usable setup for this plugin.
 
-This is a software plugin for the [Indigo home automation software](http://www.indigodomo.com). The plugin allows access to the current state information for many models of [APC](http://www.apc.com) UPSes.
+Unless otherwise noted, this plugin's releases should work without modifications with Indigo 6 and higher. With Indigo 5, minor steps after the plugin has been installed must be performed first—[see below](#installing-and-using-the-plugin-on-indigo-5). It is possible the plugin might work in earlier versions of Indigo but no testing has been done on them.
 
-Unless otherwise noted, this plugin's releases should work without modifications with Indigo 6 and Indigo 7. With Indigo 5, minor steps after the plugin has been installed must be performed—[see below](#installing-and-using-the-plugin-on-indigo-5). It is possible the plugin might work in earlier versions of Indigo but no testing has been done on them.
+## Upgrading from Plugin Versions Below 0.5.0
 
-## Upgrading from Versions Below 0.5.0
-
-If you are running a previous version lower than 0.5.0 you will need to take a few extra steps to migrate to the newer version. This should be a one-time activity, although future versions may have their own set of migration steps.
+If you are running a previous version of the plugin lower than 0.5.0 you will need to take some extra steps to migrate to the newer version. This should be a one-time activity, although future versions may have their own set of migration steps.
 
 1. Run the Indigo client on the Indigo server system.
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Disable__ menu option to disable the older plugin.
@@ -28,7 +28,7 @@ If you are running a previous version lower than 0.5.0 you will need to take a f
 1. That should enable the plugin but if not, select the __Plugins &mdash;> apcupsd &mdash;> Enable__ menu option.
 1. Setup the overall plugin settings (see [Plugin Configuration](#plugin-configuration) below).
 1. Click the __Save__ button.
-1. Reconnect existing Indigo UPS devices to the new plugin. For each such device in the Indigo client DEVICES listing:
+1. Reconnect existing Indigo apcupsd UPS devices to the new plugin. For each such device in the Indigo client DEVICES listing:
   * Double-click the matching device name.
   * The __Type:__ (or __Plugin:__ in Indigo 5) selector should be empty. Choose __apcupsd__ from the popup list.
   * Set the __Model:__ as __apcupsd UPS__.
@@ -38,39 +38,46 @@ If you are running a previous version lower than 0.5.0 you will need to take a f
   * Even if you didn't change anything, click Save on the __Configure apcupsd UPS__ dialog.
   * In Indigo 5, click OK on the __Edit Device__ dialog.
 
-This should refresh your Indigo UPS device states, while retaining associated triggers, state condition tests, etc. Should these steps not work you will need to delete the UPS device(s) and recreate them.
+This should refresh your Indigo apcupsd UPS device states, while retaining associated triggers, state condition tests, etc. Should these steps not work you will need to delete the apcupsd UPS device(s) and recreate them.
 
 ## Plugin Configuration
 
 After you install the plugin you will need to configure it. These settings apply to all UPS devices monitored by this plugin. You may need to scroll the dialog's contents to see all the settings. In the __Configure apcupsd__ dialog (__Plugins &mdash;> apcupsd &mdash;> Configure...__ menu option) you:
 
-* Set the frequency at which the Indigo devices should be queried and their state values updated. The default is every 5 minutes.
+* Set the frequency at which the devices should be queried and their state values updated. The default is every 5 minutes.
 * Decide if you want reported "units" (Minutes, Hours, Percent, etc.) to be removed from the device's state values. The default is "checked" (this makes it easier for device state comparisons).
 * Set the frequency for plugin software update checking. The default is every day.
 * See the [Event Notifications](#event-notifications) section below for setting the __Use event server for external event notifications__ checkbox. The default is "unchecked."
 * Decide if you need to override the location of the __apcaccess__ utility in the separate apcupsd package. The default is "unchecked". This is an advanced feature and should remain "unchecked" unless the plugin cannot locate this utility.
 * Set a logging level. The default is level 1.
-* Click Save.
+* Click __Save__.
 ![Plugin Configuration](doc-images/plugin_config.png)
 
 All items on the __Configure apcupsd__ dialog include tooltips—just hover over an item of interest for a quick reminder of its purpose.
-
 
 Once configured, the plugin will allow you to create an Indigo device for each apcupsd instance (IP address and port) you have for your attached UPSes.
 
 ## Device Configuration
 
-When creating an apcupsd plugin device, you:
+When creating an APCUPSD plugin device, you:
+
+* Provide a name for your device. If you are planning on using the event notification server feature of the plugin your device name needs to be no longer than 128 characters.
+* For Indigo 6 and higher: set the __Type:__ selector to be __apcupsd__ from the popup list.
+* For Indigo 5: set the __Type:__ selector to be __Plugin__ and set the __Plugin:__ to be __apcupsd__ from the popup list.
+* Set the Model: as __apcupsd UPS__.
+![Device Creation](doc-images/device_create.png)
+
+On the resulting __Configure apcupsd UPS__ dialog:
 
 * Provide an IP address. If you have the apcupsd software package running on the same machine as your Indigo server, select the default **local host**. Otherwise select **Will Specify** and enter the remote IP address in the textfield that appears.
-* Enter the port number. The default of 3551 should be correct for most installations.
+* Enter the port number. The default of 3551 should be correct for most installations. The port number is established by the external apcupsd package installation.
 * Select the UPS report fields you wish to use for states in this device. The default set contains the fields that are likely to be of interest. Buttons are available to:
   - __Query UPS for states__ (clears state checkboxes this UPS does not support, and sets those that it does)
   - __Select all states__ (fields)
   - __Deselect all states__ (fields)
   - __Reset default states__ from a built-in list in the plugin
 * Specify the state (field) to be displayed for this device in the Indigo client's DEVICES listing State column. The default is __status__.
-* Click Save.
+* Click __Save__.
 ![Device Configuration](doc-images/device_config.png)
 
 All items on the __Configure apcupsd UPS__ dialog include tooltips—just hover over an item of interest for a quick reminder of its purpose.
@@ -83,7 +90,7 @@ To enable the event server in the __Plugins &mdash;> apcupsd &mdash;> Configure.
 
 * Click the __Use event server for external event notifications__ checkbox.
 * Enter the local TCP port to listen on. This must be an unused port on the Indigo Server—15006 is used as an example.
-* Enter a comma separated list of IP addresses from which incoming event connections can be accepted. If you are running apcupsd on the local host, be sure to include 127.0.0.1.
+* Enter a comma separated list of IP addresses from which incoming event connections can be accepted. If you are running the external apcupsd package on the Indigo server, be sure to include 127.0.0.1.
 
 The screenshot in the [Plugin Configuration](#plugin-configuration) section shows this feature enabled.
 
@@ -112,7 +119,7 @@ To send these external events to the plugin's event server, you need to edit the
 * startselftest
 * timeout
 
-Add the following text to each handler file you wish to have send events to the Indigo apcupsd plugin:
+Add the following text to each handler file you wish to have send events to the Indigo APCUPSD plugin:
 
     #!/bin/sh
     
@@ -127,15 +134,14 @@ If you are comfortable with the command line interface of your Mac, you may wish
 
 ## Installing and Using the Plugin on Indigo 5
 
-Because Indigo 5 uses an older of Python for its plugin execution, some minor code changes must be made to the plugin distribution to work with that older version of Python. __These changes must be made any time the plugin is updated on your Indigo 5 system.__ Without making these code changes the plugin __will not__ function properly and will log errors to the Indigo log on an on-going basis.
+Because Indigo 5 uses an older version of Python for its plugin execution, some minor code changes must be made to the plugin distribution to work with that older version of Python. __These changes must be made any time the plugin is updated on your Indigo 5 system.__ Without making these code changes the plugin __will not__ function properly and will log errors to the Indigo log on an on-going basis.
 
+1. Run the Indigo client on the Indigo server system.
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Disable__ menu option.
-1. On the Indigo server system, open a Terminal (__/Applications/Utilities/Terminal__) window and issue these commands one at a time (please use Cut from this document and Paste each line into the Terminal window):
-```
-    cd /Library/Application\ Support/Perceptive\ Automation/Indigo\ 5/Plugins\ \(Disabled\)/apcupsd.indigoPlugin/Contents/Server\ Plugin/
+1. Open a Terminal (__/Applications/Utilities/Terminal__) window and issue this command (please Copy from this document and Paste the entire line into the Terminal window):
 
-    sed -e "s/\(.*except .*\)\( as \)\(.*:\)$/\1, \3/" -i .2.6 *.py
-```
+        /Library/Application\ Support/Perceptive\ Automation/Indigo\ 5/Plugins\ \(Disabled\)/apcupsd.indigoPlugin/Contents/Resources/use_on_Indigo5
+    If you get a "No such file or directory" error and no "Starting" message, you do not have the plugin disabled.
 1. Select the __Plugins &mdash;> apcupsd &mdash;> Enable__ menu option.
 1. Proceed with setting up the [Plugin Configuration](#plugin-configuration) and the [Device Configuration](#device-configuration) for your UPSes.
 
@@ -143,13 +149,14 @@ Because Indigo 5 uses an older of Python for its plugin execution, some minor co
 
 Please use the [APCUPSD Plugin discussion forum thread](http://www.perceptiveautomation.com/userforum/viewtopic.php?f=22&t=10707) to post any issues, questions, ideas, etc.
 
-## License
-
-This project is licensed using [Unlicense](http://unlicense.org/).
-
-## Plugin ID
+## Indigo Plugin ID
 
 Here is the plugin ID in case you need to programmatically restart the plugin:
 
-**Plugin ID**: com.martys.apcupsd
+		com.martys.apcupsd
 
+If you find that you do need to restart the plugin in this way, perhaps there is something that can be done in the code to lessen that need. Please bring it up in the forum.
+
+## License
+
+This project is licensed using [Unlicense](http://unlicense.org/). All mentioned software other than the plugin itself may be covered by different licenses.
