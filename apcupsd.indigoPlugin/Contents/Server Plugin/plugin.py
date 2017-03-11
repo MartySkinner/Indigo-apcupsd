@@ -113,7 +113,7 @@ def doShell(self, cmd):
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(2, dbFlg, "%s: Called" % (funcName), self.logName)
-        self.log.log(3, dbFlg, "%s: command to execute: %s" % (funcName, cmd), self.logName)
+        self.log.log(3, dbFlg, "%s: command: %s" % (funcName, cmd), self.logName)
 
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         out, err = p.communicate()
@@ -221,7 +221,7 @@ class Plugin(indigo.PluginBase):
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
-        self.log.log(2, dbFlg, "%s:\nvaluesDict:\n%s\nUserCancelled: %s" % (funcName, valuesDict, UserCancelled), self.logName)
+        self.log.log(4, dbFlg, "%s:\nvaluesDict:\n%s\nUserCancelled: %s" % (funcName, valuesDict, UserCancelled), self.logName)
 
         if UserCancelled is False:
             self.log = logger(self)
@@ -238,7 +238,7 @@ class Plugin(indigo.PluginBase):
                         self.serverRun = False
                         self.s.join(10)
                         cnt = 0
-                        while cnt < 20 and self.s.isAlive():
+                        while cnt < (self.apcupsdTimeout + 10) and self.s.isAlive():
                                 self.sleep(1)
                                 cnt = cnt + 1
                         self.log.log(3, dbFlg, "%s: Event notifications server needed %s delays to stop" % (funcName, cnt), self.logName)
@@ -255,14 +255,14 @@ class Plugin(indigo.PluginBase):
             self.nextUpdateCheck = 0        # this will force an update check starting now
             self.logLevel = string.atoi(valuesDict["showDebugInfo1"])
 
-            if valuesDict[u"overridePath"] and valuesDict[u"utilityPath"] != "":
-                utilityBinaryPath = valuesDict[u"utilityPath"]
+            if valuesDict["overridePath"] and valuesDict["utilityPath"] != "":
+                utilityBinaryPath = valuesDict["utilityPath"]
                 utilityBinary = findInPath(self, self.utilityBinaryName, utilityBinaryPath)
                 if self.utilityBinaryName != utilityBinary:
                         self.utilityBinaryPath = utilityBinary
 
             self.log.log(1, dbFlg, "Plugin options reset. Polling apcupsd servers every %s minutes and a debug level of %i" % (self.apcupsdFrequency, int(valuesDict["showDebugInfo1"])), self.logName)
-        self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
+        self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
 
     ########################################
     # this is also called by the custom menu item
@@ -284,7 +284,7 @@ class Plugin(indigo.PluginBase):
         if self.utilityBinaryFound is False:
                 self.log.log(2, dbFlg, "%s: A missing '%s' binary will NOT clear itself without changing the plugin preferences and/or installing the APCUPSD package, then reloading the plugin." % (funcName, self.utilityBinaryName), self.logName)
                 self.sleep(60*10)
-                self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
+                self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
                 return
 
         if self.useIpConn:
@@ -305,7 +305,7 @@ class Plugin(indigo.PluginBase):
                         # next check run
                         timeNow = time.time()
                         if timeNow > self.nextUpdateCheck:
-                                self.pluginPrefs[u'updaterLastCheck'] = timeNow
+                                self.pluginPrefs['updaterLastCheck'] = timeNow
                                 self.log.log(3, dbFlg, "# of seconds between update checks: %s" % (int(self.secondsBetweenUpdateChecks)), self.logName)
                                 self.nextUpdateCheck = timeNow + self.secondsBetweenUpdateChecks
                                 # use the updater to check for an update now
@@ -339,21 +339,26 @@ class Plugin(indigo.PluginBase):
             self.serverRun = False
             self.sleep(1)
 
-        self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
+        self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
 
     ########################################
-    def readApcupsd(self, dev, parseOnly=False):
+    def readApcupsd(self, dev, parseOnly=False, tmpProps=False):
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
         self.log.log(4, dbFlg, "%s: Received device:\n%s\n" % (funcName, dev), self.logName)
 
-        try:
-                sAddress = dev.pluginProps["apcupsdAddress"]
-        except:
-                self.log.logError("%s: Trying to get status for device %s that needs to be configured first" % (funcName, self.dev.name), self.logName)
-                return False
-        sPort = dev.pluginProps["apcupsdPort"]
+        if tmpProps is False:
+                try:
+                        sAddress = dev.pluginProps["apcupsdAddress"]
+                except KeyError:
+                        self.log.logError("%s: Trying to get status for a device that is not configured" % (funcName), self.logName)
+                        self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
+                        return False
+                sPort = dev.pluginProps["apcupsdPort"]
+        else:
+                sAddress = tmpProps["apcupsdAddress"]
+                sPort = tmpProps["apcupsdPort"]
         self.log.log(4, dbFlg, "%s: doing '%s status' for address %s on port %s" % (funcName, self.utilityBinary, sAddress, sPort), self.logName)
 
         apcupsdSuccess = False
@@ -376,8 +381,6 @@ class Plugin(indigo.PluginBase):
             else:
                 self.log.log(4, dbFlg, "%s: report\n%s" % (funcName, report), self.logName)
 
-                result, apcupsdRetries
-
                 metrics = {}
 
                 for line in report.split('\n'):
@@ -398,6 +401,7 @@ class Plugin(indigo.PluginBase):
                 if 'status' in metrics:
                     apcupsdSuccess = True
                     if parseOnly:
+                            self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
                             return (True, metrics)
 
                     if metrics['status'] == 'COMMLOST' and not self.apcupsdCommError:
@@ -416,6 +420,7 @@ class Plugin(indigo.PluginBase):
                         self.apcupsdCommError = False
                         self.log.log(3, dbFlg, "%s: ONLINE" % (funcName), self.logName)
                 else:
+                        self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
                         return (False, metrics)
 
         if apcupsdSuccess:
@@ -423,7 +428,7 @@ class Plugin(indigo.PluginBase):
                 value = metrics[metric]
                 try:
                     if metric in dev.states:
-                        self.log.log(3, dbFlg, "%s: found metric: %s " % (funcName, metric), self.logName)
+                        self.log.log(4, dbFlg, "%s: found metric: %s " % (funcName, metric), self.logName)
 
                         if self.apcupsdCommError:
                             if metric in self.commLostStatesList:
@@ -440,13 +445,14 @@ class Plugin(indigo.PluginBase):
                             except:
                                     dev.updateStateOnServer(key=metric, value=value)
 
-                        self.log.log(3, dbFlg, "%s: metric:%s, val:%s, is Error:%s" % (funcName, metric, value, self.apcupsdCommError), self.logName)
+                        self.log.log(4, dbFlg, "%s: metric:%s, val:%s, is Error:%s" % (funcName, metric, value, self.apcupsdCommError), self.logName)
                 except:
                     self.log.logError("%s: error writing device state" % (funcName), self.logName)
 
             self.log.log(2, dbFlg, "%s: Completed readings update from device: %s" % (funcName, dev.name), self.logName)
         else:
             self.log.logError("%s: Failed to get status for UPS %s after %s tries. Will retry in %s minutes" % (funcName, dev.name, apcupsdRetries, self.apcupsdFrequency), self.logName)
+        self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
 
     ########################################
     # Device start, stop, modify and delete
@@ -622,7 +628,7 @@ class Plugin(indigo.PluginBase):
         action.deviceId = dev.id
         action.props['actionType'] = event
 
-        self.log.log(3, dbFlg, "%s: built action: \n%s and retrieved dev: \n%s" % (funcName, action, dev), self.logName)
+        self.log.log(4, dbFlg, "%s: built action: \n%s and retrieved dev: \n%s" % (funcName, action, dev), self.logName)
 
         self.actionControlApcupsd(action, dev)
 
@@ -642,7 +648,7 @@ class Plugin(indigo.PluginBase):
         # All we have to do for these actons is read from the server... we will get updated states and do the right thing automatically
         try:
            apcupsdAction = action.props['actionType']
-        except:
+        except KeyError:
             apcupsdAction = ''
         self.log.log(2, dbFlg, "%s: found deviceId=%s, actionType=%s" % (funcName, action.deviceId, apcupsdAction), self.logName)
 
@@ -787,12 +793,12 @@ class Plugin(indigo.PluginBase):
                         key = "apcupsdState" + metric.upper()
                         try:
                                 if key in valuesDict:
-                                        self.log.log(3, dbFlg, "%s: found matching state: %s " % (funcName, metric), self.logName)
+                                        self.log.log(3, dbFlg, "%s: found matching state: %s" % (funcName, metric), self.logName)
                                         valuesDict[key] = True
                         except:
                                 pass
         else:
-                self.log.log(2, dbFlg, "%s: Cannot determine which states device %s might provide" % (funcName, devId.name), self.logName)
+                self.log.log(1, dbFlg, "%s: Cannot determine which states the device might provide" % (funcName), self.logName)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
         return(valuesDict)
@@ -804,7 +810,7 @@ class Plugin(indigo.PluginBase):
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
-        self.log.log(2, dbFlg, "%s: received device: \n%s\n" % (funcName, dev), self.logName)
+        self.log.log(4, dbFlg, "%s: received device:\n%s\n" % (funcName, dev), self.logName)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
         try:
@@ -818,7 +824,7 @@ class Plugin(indigo.PluginBase):
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
-        self.log.log(2, dbFlg, "%s: received device:\n%s\n" % (funcName, dev), self.logName)
+        self.log.log(4, dbFlg, "%s: received device:\n%s\n" % (funcName, dev), self.logName)
 
         statesList = []
         stateKey = 'status'
@@ -834,9 +840,9 @@ class Plugin(indigo.PluginBase):
 
                     self.log.log(4, dbFlg, "%s: %s added as state" % (funcName, key[12:]), self.logName)
             else:
-                self.log.log(4, dbFlg, "%s: %s state NOT FOUND" % (funcName, key[12:]), self.logName)
+                self.log.log(4, dbFlg, "%s: %s property is not a state" % (funcName, key[12:]), self.logName)
 
-        self.log.log(3, dbFlg, "%s: returning statesList:%s" % (funcName, statesList), self.logName)
+        self.log.log(3, dbFlg, "%s: returning statesList: %s" % (funcName, statesList), self.logName)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
         return(statesList)
@@ -847,13 +853,13 @@ class Plugin(indigo.PluginBase):
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
-        self.log.log(3, dbFlg, "%s: received:\n>>valuesDict\n%s\n>>typeId\n%s\n>>devId\n%s\n" % (funcName, valuesDict, typeId, devId), self.logName)
+        self.log.log(4, dbFlg, "%s: received:\n>>valuesDict\n%s\n>>typeId\n%s\n>>devId\n%s\n" % (funcName, valuesDict, typeId, devId), self.logName)
 
         if valuesDict['apcupsdAddressType'] == k_localhostName or valuesDict['apcupsdAddress'] == '':
             valuesDict['apcupsdAddress'] = k_localhostAddress
         self.log.log(4, dbFlg, "%s: returned:\n>>valuesDict\n%s\n" % (funcName, valuesDict), self.logName)
 
-        self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
+        self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
         return (True, valuesDict)
 
     ########################################
@@ -864,19 +870,19 @@ class Plugin(indigo.PluginBase):
         validationErr = False
         errorDict = indigo.Dict()
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
-        self.log.log(3, dbFlg, "%s: received:\n>>valuesDict\n%s\n" % (funcName, valuesDict), self.logName)
+        self.log.log(4, dbFlg, "%s: received:\n>>valuesDict\n%s\n" % (funcName, valuesDict), self.logName)
 
-        if valuesDict[u"overridePath"] and valuesDict[u"utilityPath"] != "":
-                utilityBinaryPath = valuesDict[u"utilityPath"]
+        if valuesDict["overridePath"] and valuesDict["utilityPath"] != "":
+                utilityBinaryPath = valuesDict["utilityPath"]
                 utilityBinary = findInPath(self, self.utilityBinaryName, utilityBinaryPath)
                 if self.utilityBinaryName == utilityBinary:
                         validationErr = True
                         errorDict["utilityPath"] = "'%s' utility not found in this path" % (self.utilityBinaryName)
                         errorDict["showAlertText"] = "You must specify the UNIX-style path to the '%s' binary." % (self.utilityBinaryName)
 
-        self.log.log(3, dbFlg, "%s:  returned:%s" % (funcName, valuesDict), self.logName)
+        self.log.log(4, dbFlg, "%s: returned:\n>>valuesDict\n%s\n" % (funcName, valuesDict), self.logName)
 
-        self.log.log(3, dbFlg, "%s: Completed" % (funcName), self.logName)
+        self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
         if validationErr is False:
                 return (True, valuesDict)
         else:
