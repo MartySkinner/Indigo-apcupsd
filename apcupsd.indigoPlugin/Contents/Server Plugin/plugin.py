@@ -28,9 +28,15 @@ import subprocess
 k_utilityBinaryName = "apcaccess"
 k_utilityBinaryPath = "/usr/local/sbin:/sbin"
 k_utilityCommand = "{binary} status {address} {port}".format
+k_utilityOutputSeparator = ": "
+k_utilityOutputSpaceReplacement = "_"
+k_utilityOutputUnitWords = ['Seconds', 'Minutes', 'Hours', 'Watts', 'Volts', 'Percent']
 
+k_eventServerBindHost = "0.0.0.0"
 k_eventServerListenBacklog = 5
 k_eventServerMsgMaxLength = 128 + 16 + 1 # device name + event name + separator
+k_eventServerSeparator = ":"
+k_eventServerEvents = ['annoyme', 'battattach', 'battdetach', 'changeme', 'commfailure', 'commok', 'doreboot', 'doshutdown', 'emergency', 'endselftest', 'failing', 'killpower', 'loadlimit', 'mainsback', 'offbattery', 'onbattery', 'powerout', 'readApcupsd', 'remotedown', 'runlimit', 'startselftest', 'timeout']
 
 k_localhostName = u"localhost"
 k_localhostAddress = "127.0.0.1"
@@ -41,7 +47,7 @@ k_deviceUpdateVersion = 1
 def startEventServer(self, port):
     dbFlg = False
     socket.setdefaulttimeout(self.apcupsdTimeout)
-    self.s = threading.Thread(target=eventServer, args=[self, '0.0.0.0', port])
+    self.s = threading.Thread(target=eventServer, args=[self, k_eventServerBindHost, port])
     self.s.daemon = True
     self.s.start()
     self.sleep(5)
@@ -387,15 +393,15 @@ class Plugin(indigo.PluginBase):
                 metrics = {}
 
                 for line in report.split('\n'):
-                    (key,spl,val) = line.partition(': ')
-                    # if the key contains any spaces, they would be unable to be specified in Devices.XML as field Ids so replace with underscores
-                    key = key.rstrip().lower().replace(' ', '_')
+                    (key,spl,val) = line.partition(k_utilityOutputSeparator)
+                    # if the key contains any spaces, they would be unable to be specified in Devices.XML as field Ids so replace now
+                    key = key.rstrip().lower().replace(' ', k_utilityOutputSpaceReplacement)
                     val = val.strip()
                     if self.removeUnits is True:
                         test = val.split()
                         if len(test) >= 2:
                             unit = test[1] # is there a "units" keyword here?
-                            if unit == 'Seconds' or unit == 'Minutes' or unit == 'Hours' or unit == 'Watts' or unit == 'Volts' or unit == 'Percent':
+                            if unit in k_utilityOutputUnitWords:
                                 val = test[0]  # ignore anything after 1st space
                     if key != '':
                         metrics[key] = val
@@ -618,14 +624,13 @@ class Plugin(indigo.PluginBase):
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
         try:
-            devid, event = event.split(':')
+            devid, event = event.split(k_eventServerSeparator)
             self.log.log(3, dbFlg, "%s: Received event %s for device %s" % (funcName, event, devid), self.logName)
         except:
             self.log.logError("%s: Received bad event(1) %s for device %s" % (funcName, event, devid), self.logName)
             return
 
-        eventList = ['annoyme', 'battattach', 'battdetach', 'changeme', 'commfailure', 'commok', 'doreboot', 'doshutdown', 'emergency', 'endselftest', 'failing', 'killpower', 'loadlimit', 'mainsback', 'offbattery', 'onbattery', 'powerout', 'readApcupsd', 'remotedown', 'runlimit', 'startselftest', 'timeout']
-        if event in eventList:
+        if event in k_eventServerEvents:
             self.log.log(3, dbFlg, "%s: Validated event %s for device %s" % (funcName, event, devid), self.logName)
         else:
             self.log.logError("%s: Received bad event(2) %s for device %s" % (funcName, event, devid), self.logName)
