@@ -651,6 +651,9 @@ class Plugin(indigo.PluginBase):
             self.log.logError("%s: Received bad event type %s for device %s" % (funcName, event, devid), self.logName)
             return
 
+        if devid.isdigit():
+                # the following device lookup is based upon the variable's type so we must convert from str to int now
+                devid = int(devid)
         try:
                 dev = indigo.devices[devid]
         except KeyError:
