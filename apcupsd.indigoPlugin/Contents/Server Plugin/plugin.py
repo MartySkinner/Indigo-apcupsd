@@ -67,14 +67,15 @@ def stopEventServer(self):
     funcName = inspect.stack()[0][3]
     dbFlg = False
     self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
-    self.log.log(2, dbFlg, "Event notifications server asked to stop", self.logName)
     self.serverRun = False
-    self.s.join(10)
-    cnt = 0
-    while cnt < (self.apcupsdTimeout + 10) and self.s.isAlive():
+    if hasattr(self, "s"):
+        self.log.log(2, dbFlg, "Event notifications server asked to stop", self.logName)
+        self.s.join(10)
+        cnt = 0
+        while cnt < (self.apcupsdTimeout + 10) and self.s.isAlive():
             self.sleep(1)
             cnt = cnt + 1
-    self.log.log(3, dbFlg, "%s: Event notifications server needed %s delays to stop" % (funcName, cnt), self.logName)
+        self.log.log(3, dbFlg, "%s: Event notifications server needed %s delays to stop" % (funcName, cnt), self.logName)
 
     self.log.log(2, dbFlg, "%s: completed" % (funcName), self.logName)
     return
@@ -112,6 +113,8 @@ def eventServer(self, host, port):
             else:
                 self.log.logError("%s: unauthorized client attempted access from: address: %s port: %s" % (funcName, client_address[0], client_address[1]), self.logName)
 
+            client.close()
+
         except socket.timeout:
                 pass
 
@@ -119,8 +122,6 @@ def eventServer(self, host, port):
                 e1 = sys.exc_info()[0]
                 self.log.logError("%s: read loop: Errors %s & %s" % (funcName, e, e1), self.logName)
                 pass
-
-        client.close()
 
     self.log.log(2, dbFlg, "%s: Event notification server closed" % (funcName), self.logName)
 
