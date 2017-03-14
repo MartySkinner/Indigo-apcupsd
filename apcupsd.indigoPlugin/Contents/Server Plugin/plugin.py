@@ -35,6 +35,9 @@ k_eventServerMsgMaxLength = 128 + 16 + 1 # device name + event name + separator
 k_localhostName = u"localhost"
 k_localhostAddress = "127.0.0.1"
 
+# Increment this each time Device.xml changes / adds / deletes ANY device properties / state NAMES
+k_deviceUpdateVersion = 1
+
 def startEventServer(self, port):
     dbFlg = False
     socket.setdefaulttimeout(self.apcupsdTimeout)
@@ -462,16 +465,38 @@ class Plugin(indigo.PluginBase):
         dbFlg = False
         self.log.log(2, dbFlg, "%s called for device %s" % (funcName, dev.name), self.logName)
 
-        # check to see if we have the older, misspelled property and change to the correct one if we do
+        madeChanges = False
         tmpProps = dev.pluginProps
-        try:
-            tmp = tmpProps['apcupsdDevceStateDisplay']
-            self.log.log(1, dbFlg, "%s: Changing to new property name with a value of '%s'" % (funcName, tmp), self.logName)
-            tmpProps['apcupsdDeviceStateDisplay'] = tmp
-            del tmpProps['apcupsdDevceStateDisplay']
+        deviceVersion = int(tmpProps.get('version', 0))
+        if deviceVersion < 1:
+                madeChanges = True
+                # check to see if we have any of the older, misspelled property names and change to the correct ones if we do
+                try:
+                    tmp = tmpProps['apcupsdDevceStateDisplay']
+                    tmpProps['apcupsdDeviceStateDisplay'] = tmp
+                    del tmpProps['apcupsdDevceStateDisplay']
+                except KeyError:
+                    pass
+                try:
+                    tmp = tmpProps['apcupsdstatealarmdel']
+                    tmpProps['apcupsdStateALARMDEL'] = tmp
+                    del tmpProps['apcupsdstatealarmdel']
+                except KeyError:
+                    pass
+
+        # continue with testing deviceVersion < 2, etc. as needed
+
+        # and if we have any "forced" updates to made regardless of versions (usually only seen in development)...
+#        try:
+#                del tmpProps['apcupsdstatealarmdel']
+#                madeChanges = True
+#        except:
+#                pass
+
+        if madeChanges is True:
+            self.log.log(1, dbFlg, "%s: Device %s updated to version %s" % (funcName, dev.name, k_deviceUpdateVersion), self.logName)
+            tmpProps['version'] = k_deviceUpdateVersion
             dev.replacePluginPropsOnServer(tmpProps)
-        except KeyError:
-            pass
 
         if dev.enabled and not self.startingUp:
             self.log.log(2, dbFlg, "%s: Resetting read loop to include device %s" % (funcName, dev.name), self.logName)
