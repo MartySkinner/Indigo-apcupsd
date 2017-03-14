@@ -112,7 +112,7 @@
     </Event>
 
     <Event id="failing" filter="self">
-       <Name>failing - Battery power exhaused</Name>
+       <Name>failing - Battery power exhausted</Name>
           <ConfigUI>
             <Field id="indigoDevice" type="menu" filter='self'>
               <Label>UPS Device</Label>
@@ -203,6 +203,16 @@
 
     <Event id="timeout" filter="self">
        <Name>timeout - Battery time limit exceeded</Name>
+          <ConfigUI>
+            <Field id="indigoDevice" type="menu" filter='self'>
+              <Label>UPS Device</Label>
+                <List class="indigo.devices" filter="self"/>
+            </Field>
+          </ConfigUI>
+    </Event>
+
+    <Event id="readApcupsd" filter="self">
+       <Name>pluginrefresh - Plugin devices refresh requested</Name>
           <ConfigUI>
             <Field id="indigoDevice" type="menu" filter='self'>
               <Label>UPS Device</Label>
