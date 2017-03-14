@@ -315,7 +315,7 @@ class Plugin(indigo.PluginBase):
 
         try:
             self.log.log(1, dbFlg, "Plugin started. Polling apcupsd server(s) every %s minutes" %  (self.apcupsdFrequency), self.logName)
-        except:
+        except AttributeError:
             self.log.logError("Plugin start delayed pending completion of initial plugin configuration", self.logName)
             return
 
@@ -367,7 +367,7 @@ class Plugin(indigo.PluginBase):
         funcName = inspect.stack()[0][3]
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
-        self.log.log(4, dbFlg, "%s: Received device:\n%s\n" % (funcName, dev), self.logName)
+        self.log.log(4, dbFlg, "%s: Received device:\n%s\n" % (funcName, unicode(dev)), self.logName)
 
         if tmpProps is False:
                 try:
@@ -467,8 +467,10 @@ class Plugin(indigo.PluginBase):
                                     dev.updateStateOnServer(key=metric, value=value)
 
                         self.log.log(4, dbFlg, "%s: metric:%s, val:%s, is Error:%s" % (funcName, metric, value, self.apcupsdCommError), self.logName)
-                except:
+                except Exception as e:
                     self.log.logError("%s: error writing device state" % (funcName), self.logName)
+                    e1 = sys.exc_info()[0]
+                    self.log.logError("%s: Errors %s and %s" % (funcName, e, e1), self.logName)
 
             self.log.log(2, dbFlg, "%s: Completed readings update from device: %s" % (funcName, dev.name), self.logName)
         else:
@@ -638,31 +640,24 @@ class Plugin(indigo.PluginBase):
         try:
             devid, event = event.split(k_eventServerSeparator)
             self.log.log(3, dbFlg, "%s: Received event %s for device %s" % (funcName, event, devid), self.logName)
-        except:
-            self.log.logError("%s: Received bad event(1) %s for device %s" % (funcName, event, devid), self.logName)
+        except ValueError:
+            self.log.logError("%s: Received incorrectly formatted event %s, should be DEVNAME_OR_ID%sEVENTTYPE" % (funcName, event, k_eventServerSeparator), self.logName)
             return
 
         if event in k_eventServerEvents:
             self.log.log(3, dbFlg, "%s: Validated event %s for device %s" % (funcName, event, devid), self.logName)
         else:
-            self.log.logError("%s: Received bad event(2) %s for device %s" % (funcName, event, devid), self.logName)
+            self.log.logError("%s: Received bad event type %s for device %s" % (funcName, event, devid), self.logName)
             return
 
         try:
-                # and the reason we're taking only a numeric device id and not a string one is...
-#*#                devid = int(devid)
-                pass
-        except ValueError:
-                self.log.logError("%s: Received non-numeric device ID %s for event %s" % (funcName, devid, event), self.logName)
-                return
-        try:
                 dev = indigo.devices[devid]
         except KeyError:
-                self.log.logError("%s: Unrecognized device ID %s for event %s" % (funcName, devid, event), self.logName)
+                self.log.logError("%s: Unrecognized device name or ID %s for event %s" % (funcName, devid, event), self.logName)
                 return
         # check now to see if specified device is really a device created by this plugin...
         if dev.pluginId != self.pluginId:
-                self.log.logError("%s: Device ID %s is not associated with this plugin for event %s" % (funcName, devid, event), self.logName)
+                self.log.logError("%s: Device name or ID %s is not associated with this plugin for event %s" % (funcName, devid, event), self.logName)
                 return
 
         action = Action()
@@ -859,7 +854,7 @@ class Plugin(indigo.PluginBase):
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
-        self.log.log(4, dbFlg, "%s: received device:\n%s\n" % (funcName, dev), self.logName)
+        self.log.log(4, dbFlg, "%s: received device:\n%s\n" % (funcName, unicode(dev)), self.logName)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
         try:
@@ -873,7 +868,7 @@ class Plugin(indigo.PluginBase):
         dbFlg = False
         self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
 
-        self.log.log(4, dbFlg, "%s: received device:\n%s\n" % (funcName, dev), self.logName)
+        self.log.log(4, dbFlg, "%s: received device:\n%s\n" % (funcName, unicode(dev)), self.logName)
 
         statesList = []
         stateKey = 'status'
