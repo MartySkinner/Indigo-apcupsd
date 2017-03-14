@@ -45,7 +45,10 @@ k_localhostAddress = "127.0.0.1"
 k_deviceUpdateVersion = 1
 
 def startEventServer(self, port):
+    funcName = inspect.stack()[0][3]
     dbFlg = False
+    self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
+    self.serverRun = True
     socket.setdefaulttimeout(self.apcupsdTimeout)
     self.s = threading.Thread(target=eventServer, args=[self, k_eventServerBindHost, port])
     self.s.daemon = True
@@ -53,10 +56,28 @@ def startEventServer(self, port):
     self.sleep(5)
     if self.s.isAlive():
         self.log.log(2, dbFlg, "Event notification server started", self.logName)
+        self.log.log(2, dbFlg, "%s: completed" % (funcName), self.logName)
         return True
     else:
         self.log.logError("Event notification server failed to start", self.logName)
+        self.log.log(2, dbFlg, "%s: completed" % (funcName), self.logName)
         return False
+
+def stopEventServer(self):
+    funcName = inspect.stack()[0][3]
+    dbFlg = False
+    self.log.log(2, dbFlg, "%s called" % (funcName), self.logName)
+    self.log.log(2, dbFlg, "Event notifications server asked to stop", self.logName)
+    self.serverRun = False
+    self.s.join(10)
+    cnt = 0
+    while cnt < (self.apcupsdTimeout + 10) and self.s.isAlive():
+            self.sleep(1)
+            cnt = cnt + 1
+    self.log.log(3, dbFlg, "%s: Event notifications server needed %s delays to stop" % (funcName, cnt), self.logName)
+
+    self.log.log(2, dbFlg, "%s: completed" % (funcName), self.logName)
+    return
 
 def eventServer(self, host, port):
     funcName = inspect.stack()[0][3]
@@ -244,20 +265,12 @@ class Plugin(indigo.PluginBase):
                 if lastUseIpConn:
                         self.log.log(2, dbFlg, "Event notifications server asked to stop", self.logName)
                         # because we may have new preferences to put into play, ask any currently running server to stop what its doing
-                        self.serverRun = False
-                        self.s.join(10)
-                        cnt = 0
-                        while cnt < (self.apcupsdTimeout + 10) and self.s.isAlive():
-                                self.sleep(1)
-                                cnt = cnt + 1
-                        self.log.log(3, dbFlg, "%s: Event notifications server needed %s delays to stop" % (funcName, cnt), self.logName)
-                self.serverRun = True
+                        stopEventServer(self)
                 port = int(valuesDict["useIpConnPort"])
                 startEventServer(self, port)
             else:
-                self.log.log(2, dbFlg, "Event notifications server asked to stop", self.logName)
                 # since we don't need a server now, ask any currently running server to stop what its doing
-                self.serverRun = False
+                stopEventServer(self)
 
             daysBetweenUpdateChecks = string.atoi(valuesDict["daysBetweenUpdateChecks"])
             self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
@@ -345,8 +358,7 @@ class Plugin(indigo.PluginBase):
 
         except self.StopThread:
             self.log.log(2, dbFlg, "%s: StopThread is now True" % (funcName), self.logName)
-            self.serverRun = False
-            self.sleep(1)
+            stopEventServer(self)
 
         self.log.log(2, dbFlg, "%s: Completed" % (funcName), self.logName)
 
