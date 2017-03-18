@@ -929,7 +929,12 @@ class Plugin(indigo.PluginBase):
                         errorDict["utilityPath"] = u"'%s' utility not found in this path" % (self.utilityBinaryName)
                         errorDict["showAlertText"] = u"You must specify the UNIX-style path to the '%s' binary." % (self.utilityBinaryName)
 
-        self.log.log(4, dbFlg, "%s: returned:\n>>valuesDict\n%s\n" % (funcName, valuesDict), self.logName)
+        if valuesDict["useIpConn"] is True and (valuesDict["useIpConnAccess"] == "" or valuesDict["useIpConnAccess"].find(" ") != -1):
+                        validationErr = True
+                        errorDict["useIpConnAccess"] = u"Must not contain spaces between entries or be empty"
+                        errorDict["showAlertText"] = u"One or more IP addresses should be entered, separated by only a comma. Don't forget 127.0.0.1."
+
+        self.log.log(4, dbFlg, u"%s: returned:\n>>valuesDict\n%s\n" % (funcName, valuesDict), self.logName)
 
         self.log.log(2, dbFlg, u"%s: Completed" % (funcName), self.logName)
         if validationErr is False:
