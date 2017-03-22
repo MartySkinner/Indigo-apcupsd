@@ -42,6 +42,17 @@ k_eventServerClientSeparator = u","
 k_localhostName = u"localhost"
 k_localhostAddress = u"127.0.0.1"
 
+# default preference values used if the plugin hasn't been configured
+k_apcupsdTimeoutDefault = 8
+k_apcupsdFrequencyDefault = 5
+k_useIpConnDefault = False
+k_useIpConnAccessDefault = k_localhostAddress
+k_daysBetweenUpdateChecksDefault = 1
+k_overridePathDefault = False
+k_utilityPathDefault = u""
+k_removeUnitsDefault = True
+k_showDebugInfo1Default = 1
+
 # Increment this each time Device.xml changes / adds / deletes ANY device properties / state NAMES
 k_deviceUpdateVersion = 1
 
@@ -194,13 +205,13 @@ class Plugin(indigo.PluginBase):
         try:
             self.apcupsdTimeout = string.atof(self.pluginPrefs["apcupsdTimeout"])
         except KeyError:
-            self.apcupsdTimeout = 8
+            self.apcupsdTimeout = k_apcupsdTimeoutDefault
             self.log.logError(u"The apcupsd plugin appears to have not been configured. Default values will be used until the configuration is changed.", self.logName)
 
-        self.apcupsdFrequency = string.atof(self.pluginPrefs.get("apcupsdFrequency", 5))
-        self.useIpConn = self.pluginPrefs.get("useIpConn", False)
+        self.apcupsdFrequency = string.atof(self.pluginPrefs.get("apcupsdFrequency", k_apcupsdFrequencyDefault))
+        self.useIpConn = self.pluginPrefs.get("useIpConn", k_useIpConnDefault)
         if self.useIpConn:
-            self.useIpConnAccess = self.pluginPrefs.get("useIpConnAccess", k_localhostAddress).split(k_eventServerClientSeparator)
+            self.useIpConnAccess = self.pluginPrefs.get("useIpConnAccess", k_useIpConnAccessDefault).split(k_eventServerClientSeparator)
             self.log.log(2, dbFlg, u"%s: read access list: %s" % (funcName, self.useIpConnAccess), self.logName)
 
         self.pluginid = pluginid
@@ -216,13 +227,13 @@ class Plugin(indigo.PluginBase):
 
         # setup the plugin update checker... it will be disabled if the URL is empty
         self.updater = GitHubPluginUpdater(self)
-        daysBetweenUpdateChecks = string.atof(self.pluginPrefs.get("daysBetweenUpdateChecks", 1))
+        daysBetweenUpdateChecks = string.atof(self.pluginPrefs.get("daysBetweenUpdateChecks", k_daysBetweenUpdateChecksDefault))
         self.secondsBetweenUpdateChecks = daysBetweenUpdateChecks * 86400
         self.nextUpdateCheck = 0  # this will force an update check as soon as the plugin is running
 
         self.utilityBinaryName = k_utilityBinaryName
         utilityBinaryPath = k_utilityBinaryPath
-        if self.pluginPrefs.get("overridePath", False) and self.pluginPrefs.get("utilityPath", "") != "":
+        if self.pluginPrefs.get("overridePath", k_overridePathDefault) and self.pluginPrefs.get("utilityPath", k_utilityPathDefault) != "":
                 utilityBinaryPath = self.pluginPrefs["utilityPath"]
         self.utilityBinary = findInPath(self, self.utilityBinaryName, utilityBinaryPath)
         if self.utilityBinaryName != self.utilityBinary:
@@ -231,8 +242,8 @@ class Plugin(indigo.PluginBase):
                 self.utilityBinaryFound = False
                 self.log.logError(u"Could not find the '%s' binary. Is the APCUPSD package installed?" % (self.utilityBinaryName), self.logName)
 
-        self.removeUnits = self.pluginPrefs.get("removeUnits", True)
-        self.logLevel = self.pluginPrefs.get("showDebugInfo1", 1)
+        self.removeUnits = self.pluginPrefs.get("removeUnits", k_removeUnitsDefault)
+        self.logLevel = self.pluginPrefs.get("showDebugInfo1", k_showDebugInfo1Default)
 
         self.log.log(2, dbFlg, u"%s: Completed" % (funcName), self.logName)
 
@@ -512,7 +523,7 @@ class Plugin(indigo.PluginBase):
 #        try:
 #                del tmpProps['apcupsdstatealarmdel']
 #                madeChanges = True
-#        except:
+#        except KeyError:
 #                pass
 
         if madeChanges is True:
