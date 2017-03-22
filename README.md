@@ -20,7 +20,7 @@ If you are running a previous version of the plugin lower than 0.5.0 you will ne
   * Select the __Go &mdash;> Go to Folder...__ menu option and enter the following path:
 
             /Library/Application Support/Perceptive Automation/Indigo 7/Plugins (Disabled)
-    (change Indigo 7 to Indigo 6 or Indigo 5 to match your version of Indigo)
+    (change Indigo 7 to Indigo 6 or Indigo 5 as appropriate to match your version of Indigo)
   * Drag the apcupsd.indigoPlugin from that folder to your Desktop.
   * Return back to the folder you downloaded the new version of the plugin.
   * If the new plugin download didn't automatically expand, double-click on the newly downloaded __.zip__ file (__apcupsd.indigoPlugin.zip__).
@@ -125,14 +125,29 @@ Add the following text to each handler file you wish to have send events to the 
 
     #!/bin/sh
     
-    EVENT=`basename $0`
-    UPS=12345678
-    
-    /bin/echo -n "${UPS}:${EVENT}" |/usr/bin/nc -w1 127.0.0.1 15006 &
+    . /etc/apcupsd/tell_indigo
 
-Make sure you enter the Indigo device ID for your UPS device as the value of the UPS variable in the script.
+Open a Terminal (__/Applications/Utilities/Terminal__) window and issue this command (please Copy from this document and Paste the entire line into the Terminal window):
 
-If you are comfortable with the command line interface of your Mac, you may wish to delete all but one of the handler files and then create them all again but as symlinks (not Finder aliases) to the one file you saved. In that way, you only need to edit one file to change all of the handlers.
+    sudo cp -p /Library/Application\ Support/PerceptiveAutomation/Indigo\ 7/apcupsd.indigoPlugin/Contents/Resources/tell_indigo /etc/apcupsd/
+(change Indigo\ 7 to Indigo\ 6 or Indigo\ 5 as appropriate to match your version of Indigo)
+
+Review and edit __/etc/apcupsd/tell_indigo__ as needed to set the proper __INDIGO_SERVER__ and __INDIGO_PORT__ values. Note that if your Indigo device name contains a colon (:) or unicode characters then the __/etc/apcupsd/tell_indigo__ script must use the matching numeric device ID. That can be accomplished within the example _case_ statement in the script.
+
+If you are comfortable with the command line interface of your Mac, you may wish to delete all but one of the handler files and then create them all again but as symlinks (*not* Finder aliases) to the one file you saved. In that way, you only need to edit one file to change all of the handlers.
+
+## Triggers
+
+If you have setup one or more of the __/etc/apcupsd/__*filename* handler files, you can create Indigo triggers for the matching event(s) to allow near-realtime reaction to status changes in the UPS.
+
+## Menu Items
+
+A set of commands are available in the __Plugins &mdash;> apcupsd__ menu that can be used for specific on-demand features.
+
+* Check for Updates — force the plugin to check for a software update
+* Log full report on all UPSs — places a report into the Indigo log showing the status information for each enabled UPS device
+* Refresh All UPSs — force each enabled UPS device to update its Indigo state settings
+* Look for old devices — identify any Indigo UPS devices that aren't properly migrated from the pre-0.5.0 version of the plugin
 
 ## Installing and Using the Plugin on Indigo 5
 
