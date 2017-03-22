@@ -84,6 +84,21 @@ On the resulting __Configure apcupsd UPS__ dialog (you may need to scroll to see
 
 All items on the __Configure apcupsd UPS__ dialog include tooltips—just hover over an item of interest for a quick reminder of its purpose.
 
+## Triggers
+
+If you have setup one or more of the __/etc/apcupsd/__*filename* handler files (see [Event Notifications](#event-notifications), you can create Indigo triggers for the matching event(s) to allow near-realtime reaction to status changes in the UPS.
+
+Even without Event Notifications, you can create triggers based upon device state value changes. These state changes are only updated as frequently as you have configured the plugin to poll the UPS devices so there may be some delay in the trigger event being activated by Indigo. For example, if you have a trigger set to watch for changes to a UPS device's TIMELEFT value and your polling frequency is every 5 minutes, the trigger can still test for values but should take note that if TIMELEFT is less than 5 (minutes) that another trigger may not occur before the UPS has shutdown. Testing against a value of less than 10 should still give the trigger a chance to take appropriate actions.
+
+## Menu Items
+
+A set of commands are available in the __Plugins &mdash;> apcupsd__ menu that can be used for specific on-demand features.
+
+* Check for Updates — force the plugin to check for a software update
+* Log full report on all UPSs — places a report into the Indigo log showing the status information for each enabled UPS device
+* Refresh All UPSs — force each enabled UPS device to update its Indigo state values
+* Look for old devices — identify any Indigo UPS devices that aren't migrated from the pre-0.5.0 version of the plugin
+
 ## Event Notifications
 
 The separate apcupsd package provides a mechanism to perform site-specific steps when certain events are detected on a monitored UPS. One such step can be to send a notification to the Indigo server. This plugin contains an event notification server to receive those event notifications from the local apcupsd process, via its __/etc/apcupsd/apccontrol__ shell script, and from instances of apcupsd running on remote systems via the same mechanism. This event server is __not__ required to be used *unless* you plan to have the Indigo server react to UPS changes via triggers.
@@ -135,19 +150,6 @@ Open a Terminal (__/Applications/Utilities/Terminal__) window and issue this com
 Review and edit __/etc/apcupsd/tell_indigo__ as needed to set the proper __INDIGO_SERVER__ and __INDIGO_PORT__ values. Note that if your Indigo device name contains a colon (:) or unicode characters then the __/etc/apcupsd/tell_indigo__ script must use the matching numeric device ID. That can be accomplished within the example _case_ statement in the script.
 
 If you are comfortable with the command line interface of your Mac, you may wish to delete all but one of the handler files and then create them all again but as symlinks (*not* Finder aliases) to the one file you saved. In that way, you only need to edit one file to change all of the handlers.
-
-## Triggers
-
-If you have setup one or more of the __/etc/apcupsd/__*filename* handler files, you can create Indigo triggers for the matching event(s) to allow near-realtime reaction to status changes in the UPS.
-
-## Menu Items
-
-A set of commands are available in the __Plugins &mdash;> apcupsd__ menu that can be used for specific on-demand features.
-
-* Check for Updates — force the plugin to check for a software update
-* Log full report on all UPSs — places a report into the Indigo log showing the status information for each enabled UPS device
-* Refresh All UPSs — force each enabled UPS device to update its Indigo state settings
-* Look for old devices — identify any Indigo UPS devices that aren't properly migrated from the pre-0.5.0 version of the plugin
 
 ## Installing and Using the Plugin on Indigo 5
 
