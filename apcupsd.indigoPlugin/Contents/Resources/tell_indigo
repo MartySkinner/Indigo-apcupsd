@@ -17,14 +17,18 @@ INDIGO_PORT=15006
 EVENT=$1
 UPS=$2
 
+# as needed, change the UPS name into something that matches Indigo's device
 case ${UPS} in
 	# here we match based on the exact UPS name being passed to us by the apcupsd config
 	"" | test | test-UPS | test.local ) {
-		# This is the device name of the matching apcupsd device in Indigo
+		# This is the device name of the matching device in Indigo
 		UPS="test UPS"
-		# or if you'd prefer, use the Device Id
+		# or use the Device Id (preferred)
 		UPS=123456789
+		};;
+	test2 ) {
+		UPS=987654321
 		};;
 esac
 
-/bin/echo -n "${UPS}:${EVENT}" |/usr/bin/nc -w1 "${INDIGO_SERVER}" "${INDIGO_PORT}" &
+/bin/echo -n "${UPS}:${EVENT}" | /usr/bin/nc -w1 "${INDIGO_SERVER}" "${INDIGO_PORT}" &
