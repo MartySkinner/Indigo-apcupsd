@@ -6,7 +6,7 @@
 #
 # From any of the apcupsd scripts in /etc/apcupsd (such as "offbattery"), include a line like this:
 #
-#	. /etc/apcupsd/tell_indigo
+#	source /etc/apcupsd/tell_indigo
 #
 # We will be sending the event to an Indigo server that is running the apcupsd plugin. Here's where
 # we try to get in touch:
