@@ -140,12 +140,12 @@ Add the following text to each handler file you wish to have send events to the 
 
     #!/bin/sh
     
-    . /etc/apcupsd/tell_indigo
+    source /etc/apcupsd/tell_indigo
 
 Open a Terminal (__/Applications/Utilities/Terminal__) window and issue this command (please Copy from this document and Paste the entire line into the Terminal window):
 
-    sudo cp -p /Library/Application\ Support/PerceptiveAutomation/Indigo\ 7/apcupsd.indigoPlugin/Contents/Resources/tell_indigo /etc/apcupsd/
-(change Indigo\ 7 to Indigo\ 6 or Indigo\ 5 as appropriate to match your version of Indigo)
+    sudo cp -p "/Library/Application Support/Perceptive Automation/Indigo 7/Plugins"/apcupsd.indigoPlugin/Contents/Resources/tell_indigo /etc/apcupsd/
+(change Indigo 7 to Indigo 6 or Indigo 5 as appropriate to match your version of Indigo)
 
 Review and edit __/etc/apcupsd/tell_indigo__ as needed to set the proper __INDIGO_SERVER__ and __INDIGO_PORT__ values. Note that if your Indigo device name contains a colon (:) or unicode characters then the __/etc/apcupsd/tell_indigo__ script must use the matching numeric device ID. That can be accomplished within the example _case_ statement in the script.
 
