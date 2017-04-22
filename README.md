@@ -1,3 +1,22 @@
+
+Table of Contents
+=================
+
+  * [Table of Contents](#table-of-contents)
+  * [APCUPSD Plugin](#apcupsd-plugin)
+    * [Upgrading from Plugin Versions Below 0\.5\.0](#upgrading-from-plugin-versions-below-050)
+    * [Plugin Configuration](#plugin-configuration)
+    * [Device Configuration](#device-configuration)
+    * [Triggers](#triggers)
+    * [Menu Items](#menu-items)
+    * [Event Notifications](#event-notifications)
+    * [Installing and Using the Plugin on Indigo 5](#installing-and-using-the-plugin-on-indigo-5)
+    * [Troubleshooting and Discussions](#troubleshooting-and-discussions)
+    * [Indigo Plugin ID](#indigo-plugin-id)
+    * [License](#license)
+
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc.go)
+
 # APCUPSD Plugin
 
 This is a software plugin for the [Indigo Home Automation Server](http://www.indigodomo.com). The plugin allows access to the current state information for many models of [APC](http://www.apc.com) UPSes that can be physically attached to a computer via USB or a special networking cable.
