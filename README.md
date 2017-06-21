@@ -159,7 +159,7 @@ Add the following text to each handler file you wish to have send events to the 
 
     #!/bin/sh
     
-    source /etc/apcupsd/tell_indigo
+    source /etc/apcupsd/tell_indigo $(basename $0) "$1"
 
 Open a Terminal (__/Applications/Utilities/Terminal__) window and issue this command (please Copy from this document and Paste the entire line into the Terminal window):
 
